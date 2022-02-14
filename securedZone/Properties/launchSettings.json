@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "securedZone": {
+      "commandName": "Project",
+      "commandLineArgs": "-h -v"
+    }
+  }
+}
