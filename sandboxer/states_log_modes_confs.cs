@@ -1,4 +1,4 @@
-namespace securedZone {
+namespace sandboxer {
     enum States {
         START,
         INIT,

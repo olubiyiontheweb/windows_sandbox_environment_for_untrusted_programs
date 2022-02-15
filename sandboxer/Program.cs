@@ -3,7 +3,9 @@ using System.Collections.Generic;
 
 using NDesk.Options; // https://github.com/Latency/NDesk.Options/
 
-namespace securedZone
+// https://docs.microsoft.com/en-us/previous-versions/dotnet/framework/code-access-security/how-to-run-partially-trusted-code-in-a-sandbox?redirectedfrom=MSDN
+
+namespace sandboxer
 {
     class Program
     {
@@ -17,23 +19,32 @@ namespace securedZone
         static void Main(string[] args)
         {
             bool display_guide = false;            
-            List<string> program_names = new List<string>();
+            List<string> programs_to_run = new List<string>();
 
             OptionSet options = new OptionSet() {
                 {"v|verbose", "Display debug information while running program", delegate (string value) { if (value != null) ++verbose; } },
                 {"h|?|help", "Display how to use information", delegate (string value) { display_guide = value != null; } },
-                {"p|program=", "Specify program(s) to run in sandbox", delegate (string value) { program_names.Add(value); } },
+                {
+                    "p|program=", 
+                    "Specify program(s) to run in sandbox, please provide all required arguments for the program in the same quote", 
+                    delegate (string value) { programs_to_run.Add(value); }
+                },
             };
 
             List<string> arguments;
             try
             {
                 arguments = options.Parse(args);
-                Console.WriteLine("display_guide: " + display_guide + ", verbose: " + verbose + ", args: " + args[0]);
             }
             catch (OptionException e)
             {
                 Console.WriteLine(e.Message);
+                return;
+            }
+
+            if (display_guide)
+            {
+                DisplayGuide(options);                
                 return;
             }
 
@@ -42,15 +53,15 @@ namespace securedZone
                 unrecognized_arguments = string.Join (" ", arguments.ToArray ());
                 Debug ("Displaying unrecognized arguments: " + unrecognized_arguments);
             }
-            else {
-                Debug ("No unrecognized arguments found", unrecognized_arguments);
+
+            if (programs_to_run.Count > 0) {             
+                foreach (string program in programs_to_run) {
+                    Debug ("Running program: " + program);
+                }
             }
 
-            if (display_guide)
-            {
-                DisplayGuide(options);                
-                return;
-            }
+            Console.WriteLine("\nPress any key to exit...");
+            Console.ReadKey();
         }
 
         static void DisplayGuide (OptionSet options)
