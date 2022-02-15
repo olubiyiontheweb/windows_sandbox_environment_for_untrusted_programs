@@ -1,9 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
+using System.Security.Permissions;
+using System.Security;
+using System.IO;
+using System.Net.NetworkInformation;
 
 using NDesk.Options; // https://github.com/Latency/NDesk.Options/
 
 // https://docs.microsoft.com/en-us/previous-versions/dotnet/framework/code-access-security/how-to-run-partially-trusted-code-in-a-sandbox?redirectedfrom=MSDN
+// https://github.com/zippy1981/AppDomainArguments
+// https://docs.microsoft.com/en-us/dotnet/api/system.security.permissionset?view=netframework-4.7.2
+// https://docs.microsoft.com/en-us/dotnet/api/system.security.permissionset.fromxml?view=netframework-4.7.2#system-security-permissionset-fromxml(system-security-securityelement)
+// https://docs.microsoft.com/en-us/dotnet/api/system.net.networkinformation.networkinformationpermission?view=netframework-4.7.2
 
 namespace sandboxer
 {
