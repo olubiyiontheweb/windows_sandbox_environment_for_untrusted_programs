@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+// Show an interactive session of the sandboxer for non-technical users.
 namespace interactiveSandboxer
 {
     static class Program

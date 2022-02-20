@@ -1,9 +1,10 @@
-namespace sandboxer {
+namespace sandboxer.Definitions
+{
     enum States {
         START,
         INIT,
         RUNNING,
-        STOPPED,
+        EXIT,
         ERROR
     }
 
@@ -22,12 +23,13 @@ namespace sandboxer {
 
     enum SecurityLevels {
         DEFAULT,
-        SECURED,
-        DEBUG
+        UNRESTRICTED,
+        CUSTOM,
     }
 
     enum RunningModes {
-    CONSOLE,
-    INTERACTIVE,
+       CONSOLE,
+       INTERACTIVE,
+       POWERSHELLVM,
     }
 }
