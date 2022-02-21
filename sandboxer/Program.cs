@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Diagnostics;
 using System.Security.Permissions;
 using System.Windows.Input;
 using System.Security;
@@ -15,6 +16,7 @@ using sandboxer.Definitions;
 // TODO: load the interactive sanboxer and run with a different appdomain
 
 // how to run the powershell version
+// https://jdhitsolutions.com/blog/powershell/7621/doing-more-with-windows-sandbox/
 // https://docs.microsoft.com/en-us/windows/security/threat-protection/windows-sandbox/windows-sandbox-overview#:~:text=To%20enable%20Sandbox%20using%20PowerShell,it%20for%20the%20first%20time.
 // https://answers.microsoft.com/en-us/windows/forum/all/windows-sandbox-failed-to-start/7dc9379a-dcfb-47f7-8c5b-3ae0002b5991
 // https://docs.microsoft.com/en-us/windows/security/threat-protection/windows-sandbox/windows-sandbox-configure-using-wsb-file
@@ -102,18 +104,19 @@ namespace sandboxer
                 {
                     StartWindowsSandbox();
                 }
-                
+
+                Console.WriteLine("Press the enter key to close the sandboxer or type in the path to the program you want to run in the Sandbox: ");
+                string input = Console.ReadLine();
+
+                if (string.IsNullOrWhiteSpace(input) || Keyboard.IsKeyDown(Key.Enter))
+                {
+                    state = States.EXIT;
+                }
+
                 // if we're running in console mode, we'll wait for user input
                 if (running_mode == RunningModes.CONSOLE)
                 {
-                    Console.WriteLine("Press the escape key to close the sandboxer or type in the path to the program you want to run in the Sandbox: ");
-                    string input = Console.ReadLine();
-
-                    if (string.IsNullOrWhiteSpace(input))
-                    {
-                        state = States.EXIT;
-                    }
-                    else
+                    if(!string.IsNullOrWhiteSpace(input))
                     {
                         programs_to_run.Clear();
                         programs_to_run.Add(input);
@@ -122,9 +125,12 @@ namespace sandboxer
             }
         }
 
-        private static void StartWindowsSandbox()
-        {
-            Console.WriteLine(Environment.OSVersion);
+        static void Debug (string format, params object[] args)
+        {   
+            if ( verbose > 0) {
+                Console.Write ("# ");
+                Console.WriteLine (format, args);
+            }
         }
 
         static void DisplayGuide (OptionSet options)
@@ -134,6 +140,55 @@ namespace sandboxer
             options.WriteOptionDescriptions(Console.Out);
         }
 
+        private static void StartWindowsSandbox()
+        {
+            OperatingSystem os = Environment.OSVersion;
+            Version os_version = os.Version;
+            if ((os.Platform == PlatformID.Win32NT) && os_version.Major >= 10)
+            {
+                string windir = Environment.GetEnvironmentVariable("windir");
+                string basedir = Environment.CurrentDirectory;
+                // initialize and start windows sandbox
+                WinSandboxManagager wsm = new WinSandboxManagager();
+
+                try
+                {
+                    System.Console.WriteLine("Powershell environment initialized");
+                    System.Console.WriteLine("Enabling Windows Sandbox...");
+                    PowerShell ps = PowerShell.Create();
+                    ps.AddCommand("Enable-WindowsOptionalFeature");
+                    ps.AddParameter("-FeatureName", "Containers-DisposableClientVM");
+                    ps.AddParameter("-All");
+                    ps.AddParameter("-Online");
+                    ps.Invoke();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Error: " + e.Message);
+                }
+
+                System.Console.WriteLine("Starting Windows Sandbox...");
+                
+                try
+                {
+                    Process.Start(windir + @"\Sysnative\WindowsSandbox.exe");
+                }
+                catch (Exception e)
+                {
+                    
+                    System.Console.WriteLine("Error: " + e.Message);
+                }
+                Console.ReadLine();                
+            }
+            else
+            {
+                Console.WriteLine("Windows sandbox is NOT compatible with your OS version");
+            }
+        }        
+
+        /// <summary>
+        /// Loads the sandbox environment for the dotnet route
+        /// </summary>
         static void LoadSandboxEnvironment(List<string> programs_to_run)
         {
             SandboxEnvironment sandbox_environment = new SandboxEnvironment(running_mode, log_mode, log_level, security_level);
@@ -141,14 +196,6 @@ namespace sandboxer
             {
                 Debug("Running program: " + program);
                 sandbox_environment.LoadApplication(program);
-            }
-        }
-
-        static void Debug (string format, params object[] args)
-        {   
-            if ( verbose > 0) {
-                Console.Write ("# ");
-                Console.WriteLine (format, args);
             }
         }
     }

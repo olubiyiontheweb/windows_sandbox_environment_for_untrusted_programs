@@ -6,4 +6,4 @@ A tool for creating a windows sandbox environment for excuting untrusted program
 - [x] 
 
 # How it works
-- 
+- dotnet build .\sandboxer\sandboxer.csproj --no-incremental
