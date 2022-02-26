@@ -3,7 +3,8 @@ A tool for creating a windows sandbox environment for excuting untrusted program
 
 ## Todo list
 
-- [x] 
+- [x] set up the base directory, either user sets a base directory or we use the application base directory
+- [x] Reorganize arguments for the inserted program
 
 # How it works
 - dotnet build .\sandboxer\sandboxer.csproj --no-incremental

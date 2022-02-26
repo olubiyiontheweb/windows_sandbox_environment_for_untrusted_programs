@@ -17,8 +17,9 @@ namespace sandboxer.Definitions
     enum LogLevels {
         DEBUG,
         INFO,
-        WARN,
-        ERROR
+        WARNING,
+        ERROR,
+        FATAL
     }
 
     enum SecurityLevels {
@@ -29,7 +30,7 @@ namespace sandboxer.Definitions
 
     enum RunningModes {
        CONSOLE,
-       INTERACTIVE,
        POWERSHELLVM,
+       INTERACTIVE,
     }
 }

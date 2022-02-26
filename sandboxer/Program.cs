@@ -1,17 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Reflection;
-using System.Diagnostics;
-using System.Security.Permissions;
 using System.Windows.Input;
-using System.Security;
-using System.IO;
-using System.Net.NetworkInformation;
-using System.Management.Automation;
 
+// third party library for parsing command line arguments
 using NDesk.Options; // https://github.com/Latency/NDesk.Options/
+
 using sandboxer.AppLoader;
 using sandboxer.Definitions;
+using sandboxer.winsand;
 
 // TODO: load the interactive sanboxer and run with a different appdomain
 
@@ -33,51 +29,43 @@ namespace sandboxer
 {
     class Program
     {
-        static int verbose = 0;
-
-        // default running mode is interactive opening dialog box
-        static RunningModes running_mode = RunningModes.CONSOLE;
-        static LogModes log_mode = LogModes.CONSOLE;
-        static LogLevels log_level = LogLevels.INFO;
-        static SecurityLevels security_level = SecurityLevels.DEFAULT;
-        private static States state;
-
         static void Main(string[] args)
         {
+            Console.WriteLine("\nNow running sandboxer for the first time ...\n");
             bool display_guide = false;
             List<string> programs_to_run = new List<string>();
 
             OptionSet options = new OptionSet() {
-                {"v|verbose", "Display debug information while running program", delegate (string value) { if (value != null) ++verbose; } },
-                {"h|?|help", "Display how to use information", delegate (string value) { display_guide = value != null; } },
+                {"v|verbose", "Display debug information while running program", delegate (string value) { if (value != null) ++SandboxerGlobalSetting.Verbose; } },
                 {
                     "p|program=",
                     "Specify program(s) to run in sandbox, please provide all required arguments for the program in the same quote",
                     delegate (string value) { programs_to_run.Add(value); }
                 },
-                {"r|running-mode=", "Specify running mode, default is CONSOLE", delegate (string value) { running_mode = (RunningModes)Enum.Parse(typeof(RunningModes), value); } },
-                {"l|log-mode=", "Specify log mode, default is CONSOLE", delegate (string value) { log_mode = (LogModes)Enum.Parse(typeof(LogModes), value); } },
-                {"ll|log-level=", "Specify log level, default is INFO", delegate (string value) { log_level = (LogLevels)Enum.Parse(typeof(LogLevels), value); } },
-                {"s|security-level=", "Specify security level, default is DEFAULT", delegate (string value) { security_level = (SecurityLevels)Enum.Parse(typeof(SecurityLevels), value); } },
+                {"r|running-mode=", "Specify running mode, default is CONSOLE", delegate (string value) { SandboxerGlobalSetting.RunningMode = (RunningModes)Enum.Parse(typeof(RunningModes), value, true); } },
+                {"l|log-mode=", "Specify log mode, default is CONSOLE", delegate (string value) { SandboxerGlobalSetting.LogMode = (LogModes)Enum.Parse(typeof(LogModes), value, true); } },
+                {"s|security-level=", "Specify security level, default is DEFAULT", delegate (string value) { SandboxerGlobalSetting.SecurityLevel = (SecurityLevels)Enum.Parse(typeof(SecurityLevels), value, true); } },
             };
 
+            // Parse the command line arguments provided by the user
             List<string> arguments;
             try
             {
                 arguments = options.Parse(args);
             }
-            catch (OptionException e)
+            catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                RuntimeException.Debug("Error: " + e.Message);
+                SandboxerGlobalSetting.State = States.ERROR;
                 return;
             }
 
-            state = States.INIT;
+            SandboxerGlobalSetting.State = States.INIT;
 
             if (display_guide)
             {
                 DisplayGuide(options);
-                state = States.EXIT;
+                SandboxerGlobalSetting.State = States.EXIT;
                 Console.WriteLine("Press any key to exit...");
                 Console.ReadKey();
                 return;
@@ -87,52 +75,64 @@ namespace sandboxer
             if (arguments.Count > 0)
             {
                 unrecognized_arguments = string.Join(" ", arguments.ToArray());
-                Debug("Displaying unrecognized arguments: " + unrecognized_arguments);
+                throw new RuntimeException("Displaying unrecognized arguments: " + unrecognized_arguments);
             }
 
-            // We know everything is ok here (the program is running fine), so let's check if any program has been loaded
-            state = States.RUNNING;
+            // We know everything is ok here (the program is running fine), 
+            // so let's check if any program has been loaded
+            SandboxerGlobalSetting.State = States.RUNNING;
 
-            while(state == States.RUNNING)
+            while(SandboxerGlobalSetting.State == States.RUNNING)
             {
                 // check if we're going ahead with powershell or dotnet route else open windows sandbox if we're in powershel mode
-                if (programs_to_run.Count > 0 && !(running_mode == RunningModes.POWERSHELLVM))
+                try
                 {
-                    LoadSandboxEnvironment(programs_to_run);
-                }
-                else if (running_mode == RunningModes.POWERSHELLVM)
-                {
-                    StartWindowsSandbox();
-                }
-
-                Console.WriteLine("Press the enter key to close the sandboxer or type in the path to the program you want to run in the Sandbox: ");
-                string input = Console.ReadLine();
-
-                if (string.IsNullOrWhiteSpace(input) || Keyboard.IsKeyDown(Key.Enter))
-                {
-                    state = States.EXIT;
-                }
-
-                // if we're running in console mode, we'll wait for user input
-                if (running_mode == RunningModes.CONSOLE)
-                {
-                    if(!string.IsNullOrWhiteSpace(input))
+                    if (SandboxerGlobalSetting.RunningMode == RunningModes.INTERACTIVE && programs_to_run.Count > 0)
                     {
-                        programs_to_run.Clear();
+                        Console.WriteLine("\nRunning sandboxer in {0} mode", SandboxerGlobalSetting.RunningMode);
+                    }
+                    else if (SandboxerGlobalSetting.RunningMode == RunningModes.CONSOLE && programs_to_run.Count > 0)
+                    {                        
+                        Console.WriteLine("\nRunning sandboxer in {0} mode", SandboxerGlobalSetting.RunningMode);
+                        LoadSandboxEnvironment(programs_to_run);
+                    }
+                    else if (SandboxerGlobalSetting.RunningMode == RunningModes.POWERSHELLVM && programs_to_run.Count > 0)
+                    {
+                        Console.WriteLine("\nRunning sandboxer in {0} mode", SandboxerGlobalSetting.RunningMode);
+                        Console.WriteLine("Starting Windows Sandbox ...\n");
+                        StartWindowsSandbox();
+                    }
+                }
+                catch (Exception e)
+                {
+                    SandboxerGlobalSetting.State = States.ERROR;
+                    RuntimeException.Debug("Error: " + e.Message);
+                }
+
+                programs_to_run.Clear();
+                string input = "";
+                
+                if(SandboxerGlobalSetting.RunningMode != RunningModes.INTERACTIVE)
+                {
+                    Console.WriteLine("Press the enter key to close the sandboxer or type in the path to the program you want to run in the Sandbox: ");
+                    input = Console.ReadLine();
+
+                    if (string.IsNullOrWhiteSpace(input))
+                    {
+                        SandboxerGlobalSetting.State = States.EXIT;
+                    }
+                    else
+                    {
+                        // save the raw input to the list
                         programs_to_run.Add(input);
-                    }                  
+                    }
                 }
             }
         }
 
-        static void Debug (string format, params object[] args)
-        {   
-            if ( verbose > 0) {
-                Console.Write ("# ");
-                Console.WriteLine (format, args);
-            }
-        }
-
+        /// <summary>
+        /// Display how to use guide for the sandboxer
+        /// </summary>
         static void DisplayGuide (OptionSet options)
         {
             Console.WriteLine("Usage: Program [OPTIONS]+");
@@ -140,49 +140,27 @@ namespace sandboxer
             options.WriteOptionDescriptions(Console.Out);
         }
 
+        /// <summary>
+        /// Loads and executes the windows sandbox program 
+        /// </summary>
         private static void StartWindowsSandbox()
         {
-            OperatingSystem os = Environment.OSVersion;
-            Version os_version = os.Version;
-            if ((os.Platform == PlatformID.Win32NT) && os_version.Major >= 10)
+            if (WinSandboxManagager.CheckWindowsValidity())
             {
-                string windir = Environment.GetEnvironmentVariable("windir");
-                string basedir = Environment.CurrentDirectory;
-                // initialize and start windows sandbox
-                WinSandboxManagager wsm = new WinSandboxManagager();
-
-                try
+                // if windows sandbox is not enabled, we'll enable it, then run else we'll just run it directly
+                if (!WinSandboxManagager.IsWindowsSandboxEnabled())
                 {
-                    System.Console.WriteLine("Powershell environment initialized");
-                    System.Console.WriteLine("Enabling Windows Sandbox...");
-                    PowerShell ps = PowerShell.Create();
-                    ps.AddCommand("Enable-WindowsOptionalFeature");
-                    ps.AddParameter("-FeatureName", "Containers-DisposableClientVM");
-                    ps.AddParameter("-All");
-                    ps.AddParameter("-Online");
-                    ps.Invoke();
+                    WinSandboxManagager.InstallWindowsSandbox();
+                    WinSandboxManagager.RunWindowsSandbox();
                 }
-                catch (Exception e)
-                {
-                    Console.WriteLine("Error: " + e.Message);
-                }
-
-                System.Console.WriteLine("Starting Windows Sandbox...");
-                
-                try
-                {
-                    Process.Start(windir + @"\Sysnative\WindowsSandbox.exe");
-                }
-                catch (Exception e)
-                {
-                    
-                    System.Console.WriteLine("Error: " + e.Message);
-                }
-                Console.ReadLine();                
+                else
+                {                    
+                    WinSandboxManagager.RunWindowsSandbox();
+                }    
             }
             else
             {
-                Console.WriteLine("Windows sandbox is NOT compatible with your OS version");
+                Console.WriteLine("Windows sandbox is NOT compatible with your OS version \n");
             }
         }        
 
@@ -191,11 +169,11 @@ namespace sandboxer
         /// </summary>
         static void LoadSandboxEnvironment(List<string> programs_to_run)
         {
-            SandboxEnvironment sandbox_environment = new SandboxEnvironment(running_mode, log_mode, log_level, security_level);
+            SandboxEnvironment sandbox_environment = null;
             foreach (string program in programs_to_run)
             {
-                Debug("Running program: " + program);
-                sandbox_environment.LoadApplication(program);
+                sandbox_environment = new SandboxEnvironment();
+                sandbox_environment.InitalizeEnvironment(program);
             }
         }
     }
