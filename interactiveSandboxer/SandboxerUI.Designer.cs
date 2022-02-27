@@ -1,7 +1,7 @@
 ﻿
 namespace interactiveSandboxer
 {
-    partial class Form1
+    partial class SandboxerUI
     {
         /// <summary>
         /// Required designer variable.
@@ -32,7 +32,7 @@ namespace interactiveSandboxer
             this.components = new System.ComponentModel.Container();
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Text = "Form1";
+            this.Text = "Sandboxer UI";
         }
 
         #endregion

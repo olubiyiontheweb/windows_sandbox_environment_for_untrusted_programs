@@ -9,7 +9,7 @@ namespace sandboxer
         // Initializing default settings for the Sanboxer
         // private variables 
         private static bool debugmode = false;
-        private static RunningModes running_mode = RunningModes.CONSOLE;
+        private static RunningModes running_mode = RunningModes.INTERACTIVE;
         private static LogModes log_mode = LogModes.CONSOLE;
         private static SecurityLevels security_level = SecurityLevels.DEFAULT;
         private static States state;

@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Linq;
+using System.Reflection;
 
 // third party library for parsing command line arguments
 using CommandLine; // https://github.com/commandlineparser/commandline
 
 using sandboxer.AppLoader;
 using sandboxer.Definitions;
+using sandboxer.interactive;
 using sandboxer.winsand;
 
 // TODO: load the interactive sanboxer and run with a different appdomain
@@ -24,35 +26,16 @@ using sandboxer.winsand;
 
 namespace sandboxer
 {
-    class Program
-    {
-
-        public class Options
-        {
-            [Option('d', "debugmode", Required = false, HelpText = "Display debug information while running program")]
-            public bool DebugMode { get; set; }
-
-            [Option('p', "program", Required = false, HelpText = "Specify program(s) to run in sandbox")]
-            public string Program { get; set; }
-
-            [Option('a', "arguments", Required = false, HelpText = "Specify arguments for the program, please provide all arguments for the program in the same quote")]
-            public string Arguments { get; set; }
-
-            [Option('m', "mode", Required = false, HelpText = "Specify sandbox mode to run the program in (default: INTERACTIVE)")]
-            public string Mode { get; set; }
-
-            [Option('l', "logmode", Required = false, HelpText = "Specify log mode to run the program in (default: CONSOLE)")]
-            public string LogMode { get; set; }
-        }
-        
+    partial class Program
+    {        
         static void Main(string[] args)
         {
             Console.WriteLine("\nNow running sandboxer for the first time ...\n");
             string programs_to_run = string.Empty;
             string arguments_for_program = string.Empty;
 
-            CommandLine.Parser.Default.ParseArguments<Options>(args)
-                .WithParsed<Options>(opts =>
+            CommandLine.Parser.Default.ParseArguments<OptionsManager>(args)
+                .WithParsed<OptionsManager>(opts =>
                 {
                     if (opts.DebugMode)
                     {
@@ -76,7 +59,7 @@ namespace sandboxer
                         SandboxerGlobalSetting.LogMode = (LogModes)Enum.Parse(typeof(LogModes), opts.LogMode);
                     }       
                 })
-                .WithNotParsed<Options>((errs) =>
+                .WithNotParsed<OptionsManager>((errs) =>
                 {
                     if (args.Contains("--help") || args.Contains("-h") || args.Contains("-v") || args.Contains("--version"))
                     {
@@ -97,16 +80,45 @@ namespace sandboxer
                 // check if we're going ahead with powershell or dotnet route else open windows sandbox if we're in powershel mode
                 try
                 {
-                    if (SandboxerGlobalSetting.RunningMode == RunningModes.INTERACTIVE && programs_to_run != string.Empty)
+                    if (SandboxerGlobalSetting.RunningMode == RunningModes.INTERACTIVE)
                     {
-                        Console.WriteLine("\nRunning sandboxer in {0} mode", SandboxerGlobalSetting.RunningMode);
+                        // load the sandboxer UI interface from the interactiveSandboxer.dll assembly
+                        // and run the program in the sandbox
+                        string basedir = AppDomain.CurrentDomain.BaseDirectory;
+                        string dll_path = basedir + @"\interactiveSandboxer.dll";
+
+                        // load the dll
+                        Assembly assembly = Assembly.LoadFrom(dll_path);
+
+                        // get the ISandboxerUI type
+                        Type[] types = assembly.GetTypes();
+                        foreach (Type type in types)
+                        {
+                            if (type.GetInterface("ISandboxerUI") != null)
+                            {
+                                // create an instance of the class
+                                ISandboxerUI interactive_instance = (ISandboxerUI)Activator.CreateInstance(type);
+
+                                // hide the console window
+                                ConsoleExtension.Hide();
+
+                                // show the UI
+                                interactive_instance.ShowUI();
+                            }
+                        }
+
                     }
-                    else if (SandboxerGlobalSetting.RunningMode == RunningModes.CONSOLE && programs_to_run != string.Empty)
-                    {                        
+                    else if (SandboxerGlobalSetting.RunningMode == RunningModes.CONSOLE)
+                    {
+                        ConsoleExtension.Show();
                         Console.WriteLine("\nRunning sandboxer in {0} mode", SandboxerGlobalSetting.RunningMode);
-                        LoadSandboxEnvironment(programs_to_run, arguments_for_program);
+
+                        if(programs_to_run != string.Empty)
+                        {
+                            LoadSandboxEnvironment(programs_to_run, arguments_for_program);
+                        }
                     }
-                    else if (SandboxerGlobalSetting.RunningMode == RunningModes.POWERSHELLVM && programs_to_run != string.Empty)
+                    else if (SandboxerGlobalSetting.RunningMode == RunningModes.POWERSHELLVM)
                     {
                         Console.WriteLine("\nRunning sandboxer in {0} mode", SandboxerGlobalSetting.RunningMode);
                         Console.WriteLine("Starting Windows Sandbox ...\n");

@@ -63,7 +63,7 @@ namespace sandboxer.AppLoader
         /// </summary>
         public void InitalizeEnvironment(string programName, string arguments)
         {
-            var baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
+            var baseDirectory = Environment.CurrentDirectory; // AppDomain.CurrentDomain.BaseDirectory;
             Console.WriteLine("Running program {0} ....", baseDirectory + @"\"+ programName);
 
             Byte[] fileBytes = File.ReadAllBytes(programName);

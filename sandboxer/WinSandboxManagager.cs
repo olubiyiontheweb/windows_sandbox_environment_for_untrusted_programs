@@ -7,7 +7,7 @@ using sandboxer;
 
 namespace sandboxer.winsand
 {
-    static class WinSandboxManagager
+    public static class WinSandboxManagager
     {
         static string basedir = Environment.CurrentDirectory;
         static string error_message = "You need to run this program as administrator to install Windows Sandbox feature.";
@@ -83,6 +83,14 @@ namespace sandboxer.winsand
             }        
         }
 
+        private static void DoesFileExist(string file_path)
+        {
+            if (!System.IO.File.Exists(file_path))
+            {
+                throw new RuntimeException("File not found: " + file_path + "\n");
+            }
+        }
+
         public static void RunWindowsSandbox()
         {
             try
@@ -90,6 +98,8 @@ namespace sandboxer.winsand
                 Console.WriteLine("Starting Windows Sandbox...");
 
                 string windir = Environment.GetEnvironmentVariable("windir");
+
+                DoesFileExist(basedir + @"\windows_sanbox_config.wsb");
 
                 // Now that we've confirmed Windows sandbox is enabled, we can run it with the new configuration
                 Process process = Process.Start(windir + @"\Sysnative\WindowsSandbox.exe", basedir + @"\windows_sanbox_config.wsb");

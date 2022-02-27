@@ -13,7 +13,7 @@ using System.Security.Permissions;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("sandboxer")]
-[assembly: AssemblyCopyright("Copyright © Olubiyi Oluwatosin 2022")]
+[assembly: AssemblyCopyright("Copyright © Oluwatosin Olubiyi 2022")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
