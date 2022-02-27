@@ -1,16 +1,9 @@
 using System;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Security;
-using System.Security.Policy;
 using System.Security.Permissions;
-using System.Reflection;
-using System.Runtime.Remoting;
 using System.Reflection.Metadata;
 using System.Reflection.PortableExecutable;
-
-using sandboxer;
 
 namespace sandboxer.AppLoader
 {
@@ -21,7 +14,9 @@ namespace sandboxer.AppLoader
     internal class SandboxEnvironment
     {
         #region Private Fields
+
         private AppDomain sandbox_domain;
+        
         #endregion
 
         /// <summary>
@@ -34,6 +29,7 @@ namespace sandboxer.AppLoader
         /// this was copied from my code in component based architecture assignment on virtual machine
         /// (Oluwatosin, 2021)
         /// </summary>>
+        
         internal static bool IsFileAnAssembly(string path)
         {
             if (!File.Exists(path))
@@ -65,7 +61,7 @@ namespace sandboxer.AppLoader
         /// <summary>
         /// initialize app domain with permissions and security level
         /// </summary>
-        public void InitalizeEnvironment(string programName)
+        public void InitalizeEnvironment(string programName, string arguments)
         {
             var baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
             Console.WriteLine("Running program {0} ....", baseDirectory + @"\"+ programName);
@@ -97,11 +93,12 @@ namespace sandboxer.AppLoader
             try
             {
                 allowedSet.AddPermission(new SecurityPermission(SecurityPermissionFlag.Execution));
-                allowedSet.AddPermission(new UIPermission(UIPermissionWindow.SafeTopLevelWindows));
+                allowedSet.AddPermission(new SecurityPermission(SecurityPermissionFlag.SerializationFormatter));
+                allowedSet.AddPermission (new UIPermission (PermissionState.Unrestricted));
+                allowedSet.AddPermission(new FileIOPermission(FileIOPermissionAccess.AllAccess, baseDirectory));
+                allowedSet.AddPermission(new ReflectionPermission(ReflectionPermissionFlag.MemberAccess));
 
                 // only allow the current directory of the file to be accessed
-                allowedSet.AddPermission(new FileIOPermission(FileIOPermissionAccess.AllAccess, setup.ApplicationBase));
-                allowedSet.AddPermission(new ReflectionPermission(ReflectionPermissionFlag.RestrictedMemberAccess));
                 allowedSet.Demand();
             }
             catch (Exception e)
@@ -112,7 +109,9 @@ namespace sandboxer.AppLoader
             try
             {
                 // create the sandbox application domain for the received program
-                sandbox_domain = AppDomain.CreateDomain(programName, null, setup, allowedSet);                
+                sandbox_domain = AppDomain.CreateDomain("Sandboxer Domain", null, setup, allowedSet);          
+
+                // load the assembly into the sandbox application domain
             }
             catch (Exception e)
             {                
@@ -123,18 +122,17 @@ namespace sandboxer.AppLoader
             {
                 Console.WriteLine("Loading assembly: " + programName);
                 try
-                {
+                {                    
+                    // parse arguments into array
+                    string[] args = arguments.Split(' ');
+
                     // load and execute the assembly file into the application domain
-                    var args = new String[] {  }; // args.Append("hello");
-                    object[] parameters = new[] { args };
-                    // sandbox_domain.ExecuteAssembly(programName, args);
-                    Assembly assembly = sandbox_domain.Load(fileBytes);
-                    MethodInfo method = assembly.EntryPoint;
-                    method.Invoke(null, parameters);
+                    sandbox_domain.ExecuteAssembly(baseDirectory + @"\" + programName, args);
+                    AppDomain.Unload(sandbox_domain);
                 }
                 catch (Exception e)
                 {
-                    string error_message = "Error: file " + programName + " could not be executed";
+                    string error_message = "Security Error: file " + programName + " could not be executed";
                     RuntimeException.Debug(error_message, e.Message);
                 }
             }

@@ -45,11 +45,11 @@ namespace sandboxer
         {   
             if (SandboxerGlobalSetting.LogMode == LogModes.CONSOLE)
             {                
-                Console.WriteLine(custom_message + "\n");
+                Console.WriteLine("\n" + custom_message);
 
-                if(SandboxerGlobalSetting.Verbose > 0)
+                if(SandboxerGlobalSetting.DebugMode == true)
                 {
-                    Console.WriteLine("Exception_message: " + exception_message);
+                    Console.WriteLine("Exception_message: " + exception_message + "\n");
                 }
             }
             else if (SandboxerGlobalSetting.LogMode == LogModes.FILE)
@@ -58,7 +58,7 @@ namespace sandboxer
                 {
                     writer.WriteLine(custom_message + "\n");
 
-                    if(SandboxerGlobalSetting.Verbose > 0)
+                    if(SandboxerGlobalSetting.DebugMode == true)
                     {
                         writer.WriteLine("Exception_message: " + exception_message);
                     }

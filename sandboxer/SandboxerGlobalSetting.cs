@@ -8,17 +8,17 @@ namespace sandboxer
 
         // Initializing default settings for the Sanboxer
         // private variables 
-        private static int verbose = 0;
+        private static bool debugmode = false;
         private static RunningModes running_mode = RunningModes.CONSOLE;
         private static LogModes log_mode = LogModes.CONSOLE;
         private static SecurityLevels security_level = SecurityLevels.DEFAULT;
         private static States state;
 
         // public getter and setter methods
-        public static int Verbose
+        public static bool DebugMode
         {
-            get { return verbose; }
-            set { verbose = value; }
+            get { return debugmode; }
+            set { debugmode = value; }
         }
         public static RunningModes RunningMode
         {
