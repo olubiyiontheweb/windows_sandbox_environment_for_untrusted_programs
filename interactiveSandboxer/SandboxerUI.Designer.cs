@@ -44,15 +44,23 @@ namespace interactiveSandboxer
             this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.checkBox2 = new System.Windows.Forms.CheckBox();
             this.button1 = new System.Windows.Forms.Button();
+            this.label8 = new System.Windows.Forms.Label();
+            this.textBox5 = new System.Windows.Forms.TextBox();
+            this.label9 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // checkedListBox1
             // 
             this.checkedListBox1.FormattingEnabled = true;
-            this.checkedListBox1.Location = new System.Drawing.Point(56, 112);
+            this.checkedListBox1.Items.AddRange(new object[] {
+            "Execution Permission",
+            "Directory Access",
+            "Network Access"});
+            this.checkedListBox1.Location = new System.Drawing.Point(56, 90);
             this.checkedListBox1.Name = "checkedListBox1";
-            this.checkedListBox1.Size = new System.Drawing.Size(227, 109);
+            this.checkedListBox1.Size = new System.Drawing.Size(268, 49);
             this.checkedListBox1.TabIndex = 1;
+            this.checkedListBox1.SelectedIndexChanged += new System.EventHandler(this.checkedListBox1_SelectedIndexChanged);
             // 
             // label1
             // 
@@ -68,14 +76,17 @@ namespace interactiveSandboxer
             // label2
             // 
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(69, 60);
+            this.label2.Location = new System.Drawing.Point(113, 53);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(211, 49);
+            this.label2.Size = new System.Drawing.Size(211, 34);
             this.label2.TabIndex = 3;
             this.label2.Text = "Please select the permissions you want to allow in the sandbox environment";
+            this.label2.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
             // textBox1
             // 
+            this.textBox1.Enabled = false;
+            this.textBox1.HideSelection = false;
             this.textBox1.Location = new System.Drawing.Point(56, 288);
             this.textBox1.Multiline = true;
             this.textBox1.Name = "textBox1";
@@ -140,7 +151,7 @@ namespace interactiveSandboxer
             // 
             // textBox4
             // 
-            this.textBox4.Location = new System.Drawing.Point(396, 183);
+            this.textBox4.Location = new System.Drawing.Point(396, 185);
             this.textBox4.Name = "textBox4";
             this.textBox4.Size = new System.Drawing.Size(338, 20);
             this.textBox4.TabIndex = 10;
@@ -190,11 +201,45 @@ namespace interactiveSandboxer
             this.button1.Text = "Start";
             this.button1.UseVisualStyleBackColor = true;
             // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label8.Location = new System.Drawing.Point(53, 151);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(153, 17);
+            this.label8.TabIndex = 18;
+            this.label8.Text = "Custom Permissions";
+            this.label8.Click += new System.EventHandler(this.label8_Click);
+            // 
+            // textBox5
+            // 
+            this.textBox5.Location = new System.Drawing.Point(56, 208);
+            this.textBox5.Multiline = true;
+            this.textBox5.Name = "textBox5";
+            this.textBox5.Size = new System.Drawing.Size(268, 38);
+            this.textBox5.TabIndex = 17;
+            // 
+            // label9
+            // 
+            this.label9.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label9.Location = new System.Drawing.Point(91, 171);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(233, 34);
+            this.label9.TabIndex = 19;
+            this.label9.Text = "Please refer to the guide on how to add custom permissions for your prefered sand" +
+    "box type";
+            this.label9.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.label9.Click += new System.EventHandler(this.label9_Click);
+            // 
             // SandboxerUI
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.label9);
+            this.Controls.Add(this.label8);
+            this.Controls.Add(this.textBox5);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.checkBox2);
             this.Controls.Add(this.checkBox1);
@@ -234,6 +279,9 @@ namespace interactiveSandboxer
         private System.Windows.Forms.CheckBox checkBox1;
         private System.Windows.Forms.CheckBox checkBox2;
         private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.TextBox textBox5;
+        private System.Windows.Forms.Label label9;
     }
 }
 

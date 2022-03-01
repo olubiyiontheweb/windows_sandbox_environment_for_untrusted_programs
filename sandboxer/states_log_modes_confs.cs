@@ -28,7 +28,7 @@ namespace sandboxer.Definitions
         CUSTOM,
     }
 
-    enum RunningModes {
+    public enum RunningModes {
        CONSOLE,
        POWERSHELLVM,
        INTERACTIVE,

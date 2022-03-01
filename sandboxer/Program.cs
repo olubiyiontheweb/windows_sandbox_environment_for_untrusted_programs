@@ -16,18 +16,22 @@ namespace sandboxer
     {        
         static void Main(string[] args)
         {
-            Console.WriteLine("\nNow running sandboxer for the first time ...\n");
+            // let's initialize instance of the interactive sandboxer by reflection before we continue
+            InitializeSanboxerUI();
+            
+            SandboxerGlobalSetting.RedirectMessageDisplay("\nNow running sandboxer for the first time ...\n");
 
             CommandLine.Parser.Default.ParseArguments<OptionsManager>(args)
                 .WithParsed<OptionsManager>(opts =>
                 {
                     if (opts.DebugMode)
                     {
-                        Console.WriteLine("Debug mode is on\n");
+                        SandboxerGlobalSetting.RedirectMessageDisplay("Debug mode is on\n");
                         SandboxerGlobalSetting.DebugMode = true;
                     }
                     else if (opts.PassArguments)
                     {
+                        SandboxerGlobalSetting.RunningMode = RunningModes.CONSOLE;
                         AskUserInteractively("all");
                     }
                 })
@@ -39,7 +43,7 @@ namespace sandboxer
                     }
                     else
                     {
-                        throw new RuntimeException("Unrecognized arguments provided: " + string.Join(", ", errs));
+                        RuntimeException.Debug("Unrecognized arguments provided: " + string.Join(", ", errs));
                     }
                 });
 
@@ -54,36 +58,17 @@ namespace sandboxer
                 {
                     if (SandboxerGlobalSetting.RunningMode == RunningModes.INTERACTIVE)
                     {
-                        // load the sandboxer UI interface from the interactiveSandboxer.dll assembly
-                        // and run the program in the sandbox
-                        string basedir = AppDomain.CurrentDomain.BaseDirectory;
-                        string dll_path = basedir + @"\interactiveSandboxer.dll";
+                        // hide the console window
+                        ConsoleExtension.Hide();
 
-                        // load the dll
-                        Assembly assembly = Assembly.LoadFrom(dll_path);
-
-                        // get the ISandboxerUI type
-                        Type[] types = assembly.GetTypes();
-                        foreach (Type type in types)
-                        {
-                            if (type.GetInterface("ISandboxerUI") != null)
-                            {
-                                // create an instance of the class
-                                ISandboxerUI interactive_instance = (ISandboxerUI)Activator.CreateInstance(type);
-
-                                // hide the console window
-                                ConsoleExtension.Hide();
-
-                                // show the UI
-                                interactive_instance.ShowUI();
-                            }
-                        }
-
+                        // show the UI
+                        SandboxerGlobalSetting.SandboxerUIInstance.ShowUI();
                     }
                     else if (SandboxerGlobalSetting.RunningMode == RunningModes.CONSOLE)
                     {
                         // ConsoleExtension.Show();
-                        Console.WriteLine("\nRunning sandboxer in {0} mode", SandboxerGlobalSetting.RunningMode);
+                        string message = "\nRunning sandboxer in " + SandboxerGlobalSetting.RunningMode + "mode";
+                        SandboxerGlobalSetting.RedirectMessageDisplay(message);
 
                         if(SandboxerGlobalSetting.ProgramToRun != string.Empty)
                         {
@@ -92,8 +77,9 @@ namespace sandboxer
                     }
                     else if (SandboxerGlobalSetting.RunningMode == RunningModes.POWERSHELLVM)
                     {
-                        Console.WriteLine("\nRunning sandboxer in {0} mode", SandboxerGlobalSetting.RunningMode);
-                        Console.WriteLine("Starting Windows Sandbox ...\n");
+                        string message = "\nRunning sandboxer in " + SandboxerGlobalSetting.RunningMode + "mode";
+                        SandboxerGlobalSetting.RedirectMessageDisplay(message);
+                        SandboxerGlobalSetting.RedirectMessageDisplay("Starting Windows Sandbox ...\n");
                         StartWindowsSandbox();
                     }
                 }
@@ -139,7 +125,7 @@ namespace sandboxer
             }
             else
             {
-                Console.WriteLine("Windows sandbox is NOT compatible with your OS version \n");
+                SandboxerGlobalSetting.RedirectMessageDisplay("Windows sandbox is NOT compatible with your OS version \n");
             }
         }        
 
@@ -150,6 +136,27 @@ namespace sandboxer
         {
             SandboxEnvironment sandbox_environment = new SandboxEnvironment();
             sandbox_environment.InitalizeEnvironment();
-        }        
+        }
+
+        static void InitializeSanboxerUI()
+        {
+            // load the sandboxer UI interface from the interactiveSandboxer.dll assembly
+            // and run the program in the sandbox
+            string dll_path = SandboxerGlobalSetting.WorkingDirectory + @"\interactiveSandboxer.dll";
+
+            // load the dll
+            Assembly assembly = Assembly.LoadFrom(dll_path);
+
+            // get the ISandboxerUI type
+            Type[] types = assembly.GetTypes();
+            foreach (Type type in types)
+            {
+                if (type.GetInterface("ISandboxerUI") != null)
+                {
+                    // create an instance of the class
+                    SandboxerGlobalSetting.SandboxerUIInstance = (ISandboxerUI)Activator.CreateInstance(type);
+                }
+            }
+        }
     }
 }

@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using sandboxer.Definitions;
+
 namespace sandboxer.interactive
 {
     public interface ISandboxerUI
@@ -11,7 +13,7 @@ namespace sandboxer.interactive
         /// <summary>
         /// Gets or sets the sandbox mode, which is either dotnet or windows sandbox
         /// </summary>
-        string sandboxMode { get; set; }
+        RunningModes sandboxMode { get; set; }
 
         /// <summary>
         /// List of selected permissions

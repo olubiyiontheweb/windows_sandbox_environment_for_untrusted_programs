@@ -65,7 +65,8 @@ namespace sandboxer.AppLoader
         /// </summary>
         public void InitalizeEnvironment()
         {
-            Console.WriteLine("Running program {0} ....", SandboxerGlobalSetting.ProgramToRun);
+            string message = "Running program " + SandboxerGlobalSetting.ProgramToRun + " ....";
+            SandboxerGlobalSetting.RedirectMessageDisplay(message);
 
             Byte[] fileBytes = File.ReadAllBytes(SandboxerGlobalSetting.ProgramToRun);
 
@@ -103,7 +104,7 @@ namespace sandboxer.AppLoader
 
             if (IsFileAnAssembly(SandboxerGlobalSetting.ProgramToRun))
             {
-                Console.WriteLine("Loading assembly: " + SandboxerGlobalSetting.ProgramToRun);
+                SandboxerGlobalSetting.RedirectMessageDisplay("Loading assembly: " + SandboxerGlobalSetting.ProgramToRun);
                 try
                 {
                     // load and execute the assembly file into the application domain

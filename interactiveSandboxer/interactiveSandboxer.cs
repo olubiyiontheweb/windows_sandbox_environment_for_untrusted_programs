@@ -13,55 +13,60 @@ using sandboxer.winsand;
 
 namespace interactiveSandboxer
 {
-    class interactiveSandboxer : ISandboxerUI
-    {
+    public static class Variables
+    {        
         #region private variables
 
-        private string sandbox_mode = string.Empty;
-        private List<string> selected_permissions = new List<string>();
-        private string program_name = string.Empty;
-        private string arguments = string.Empty;
-        private string working_directory = string.Empty;
-        private string error_message = string.Empty;
+        public static RunningModes sandbox_mode = RunningModes.CONSOLE;
+        public static List<string> selected_permissions = new List<string>();
+        public static string program_name = string.Empty;
+        public static string arguments = string.Empty;
+        public static string error_message = string.Empty;
+        public static PermissionDict available_permissions = new PermissionDict();
+        public static string custom_permissions = "";
+        public static string working_directory = Environment.CurrentDirectory;
+
 
         #endregion
-
+    }
+    public class interactiveSandboxer : ISandboxerUI
+    {
         #region public variables
 
-        public string sandboxMode
+        public RunningModes sandboxMode
         {
-            get { return sandbox_mode; }
-            set { sandbox_mode = value; }
+            get { return Variables.sandbox_mode; }
+            set { Variables.sandbox_mode = value; }
         }
 
         public List<string> selectedPermissions
         {
-            get { return selected_permissions; }
-            set { selected_permissions = value; }
+            get { return Variables.selected_permissions; }
+            set { Variables.selected_permissions = value; }
         }
 
         public string programName
         {
-            get { return program_name; }
-            set { program_name = value; }
+            get { return Variables.program_name; }
+            set { Variables.program_name = value; }
         }
 
         public string Arguments
         {
-            get { return arguments; }
-            set { arguments = value; }
+            get { return Variables.arguments; }
+            set { Variables.arguments = value; }
         }
 
         public string workingDirectory
         {
-            get { return working_directory; }
-            set { working_directory = value; }
+            get { return Variables.working_directory; }
+            set { Variables.working_directory = value; }
         }
 
         public string errorMessage
         {
-            get { return error_message; }
-            set { error_message = value; }
+            get { return Variables.error_message; }
+            set { Variables.error_message = value; }
         }
 
         #endregion
@@ -70,17 +75,13 @@ namespace interactiveSandboxer
 
         private void Start()
         {
-            if (sandbox_mode == "dotnet")
+            if (Variables.sandbox_mode == RunningModes.CONSOLE)
             {                
                 //sandboxer.Execute();
             }
-            else if (sandbox_mode == "windows")
+            else if (Variables.sandbox_mode == RunningModes.INTERACTIVE)
             {
                 // sandboxer.Execute();
-            }
-            else
-            {
-                error_message = "Invalid sandbox mode";
             }
         }
 

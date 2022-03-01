@@ -119,6 +119,7 @@
       <HintPath>..\packages\System.Collections.Immutable.6.0.0\lib\net461\System.Collections.Immutable.dll</HintPath>
     </Reference>
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Management" />
     <Reference Include="System.Management.Automation, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.PowerShell.5.ReferenceAssemblies.1.1.0\lib\net4\System.Management.Automation.dll</HintPath>
@@ -148,7 +149,7 @@
   <ItemGroup>
     <Compile Include="AppLoader.cs" />
     <Compile Include="ConsoleExtension.cs" />
-    <Compile Include="interactive\ISandboxerUI.cs" />
+    <Compile Include="interfaces\ISandboxerUI.cs" />
     <Compile Include="OptionsManager.cs" />
     <Compile Include="PermissionManager.cs" />
     <Compile Include="Program.cs" />

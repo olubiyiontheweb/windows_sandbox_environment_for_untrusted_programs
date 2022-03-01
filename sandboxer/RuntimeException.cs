@@ -30,7 +30,22 @@ namespace sandboxer
         {   
             if (SandboxerGlobalSetting.LogMode == LogModes.CONSOLE)
             {
-                Console.WriteLine(custom_message);
+                if(SandboxerGlobalSetting.RunningMode == RunningModes.INTERACTIVE)
+                {
+                    try
+                    {
+                        // append to the console box in windows forms
+                        SandboxerGlobalSetting.SandboxerUIInstance.errorMessage = custom_message;
+                    }
+                    catch (System.Exception)
+                    {                        
+                        throw;
+                    }
+                }
+                else
+                {
+                    Console.WriteLine(custom_message);
+                }
             }
             else if (SandboxerGlobalSetting.LogMode == LogModes.FILE)
             {
@@ -41,13 +56,30 @@ namespace sandboxer
             }
         }
 
+        /// <summary>
+        /// Overloading the debug method
         public static void Debug (string custom_message, string exception_message)
         {   
             if (SandboxerGlobalSetting.LogMode == LogModes.CONSOLE)
             {                
-                Console.WriteLine("\n" + custom_message);
+                Debug(custom_message);
 
                 if(SandboxerGlobalSetting.DebugMode == true)
+                {
+                    if(SandboxerGlobalSetting.RunningMode == RunningModes.INTERACTIVE)
+                    {
+                        try
+                        {
+                            // append to the console box in windows forms
+                            SandboxerGlobalSetting.SandboxerUIInstance.errorMessage = custom_message;
+                        }
+                        catch (System.Exception)
+                        {                        
+                            throw;
+                        }
+                    }
+                }
+                else
                 {
                     Console.WriteLine("Exception_message: " + exception_message + "\n");
                 }

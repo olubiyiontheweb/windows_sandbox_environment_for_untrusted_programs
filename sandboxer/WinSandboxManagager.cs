@@ -19,12 +19,12 @@ namespace sandboxer.winsand
             Version os_version = os.Version;
             if ((os.Platform == PlatformID.Win32NT) && os_version.Major >= 10)
             {
-                Console.WriteLine("Windows 10 or higher detected.");
+                SandboxerGlobalSetting.RedirectMessageDisplay("Windows 10 or higher detected.");
                 return true;
             }
             else
             {
-                Console.WriteLine("Windows 10 or higher is required to run in Windows Sandbox Mode.");
+                SandboxerGlobalSetting.RedirectMessageDisplay("Windows 10 or higher is required to run in Windows Sandbox Mode.");
                 return false;
             }
         }
@@ -33,7 +33,7 @@ namespace sandboxer.winsand
         {
             try
             {
-                Console.WriteLine("Please hold-on let's check if Windows Sandbox feature is enabled on this system...");
+                SandboxerGlobalSetting.RedirectMessageDisplay("Please hold-on let's check if Windows Sandbox feature is enabled on this system...");
                 PowerShell ps = PowerShell.Create();
                 ps.AddScript("(Get-WindowsOptionalFeature -Online -FeatureName \"Containers-DisposableClientVM\").state");
                 Collection<PSObject> psOutput = ps.Invoke();
@@ -41,18 +41,18 @@ namespace sandboxer.winsand
                 {
                     if (psOutput[0].ToString() == "Enabled")
                     {
-                        Console.WriteLine("Windows Sandbox feature is enabled on this system.");
+                        SandboxerGlobalSetting.RedirectMessageDisplay("Windows Sandbox feature is enabled on this system.");
                         return true;
                     }
                     else
                     {
-                        Console.WriteLine("Windows Sandbox feature is not enabled on this system.");
+                        SandboxerGlobalSetting.RedirectMessageDisplay("Windows Sandbox feature is not enabled on this system.");
                         return false;
                     }
                 }
                 else
                 {
-                    Console.WriteLine("Windows Sandbox feature is not enabled on this system.");
+                    SandboxerGlobalSetting.RedirectMessageDisplay("Windows Sandbox feature is not enabled on this system.");
                     return false;
                 }
             }
@@ -67,7 +67,7 @@ namespace sandboxer.winsand
         {
             try 
             {
-                Console.WriteLine("Installing Windows Sandbox...");
+                SandboxerGlobalSetting.RedirectMessageDisplay("Installing Windows Sandbox...");
 
                 // we need to enable Windows sandbox feature in windows if 
                 // we must run Windows Sandbox in windows 10
@@ -97,7 +97,7 @@ namespace sandboxer.winsand
         {
             try
             {
-                Console.WriteLine("Starting Windows Sandbox...");
+                SandboxerGlobalSetting.RedirectMessageDisplay("Starting Windows Sandbox...");
 
                 string windir = Environment.GetEnvironmentVariable("windir");
 

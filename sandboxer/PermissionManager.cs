@@ -75,7 +75,7 @@ namespace sandboxer.permissions
         {
             string working_directory = SandboxerGlobalSetting.WorkingDirectory;
             // create a new file
-            using (StreamWriter file = new StreamWriter(working_directory + "user_defined_sanbox_config" + ".wsb"))
+            using (StreamWriter file = new StreamWriter("user_defined_sanbox_config" + ".wsb"))
             {
                 // write xml content to the file
                 file.WriteLine("<Configuration>");
@@ -83,12 +83,12 @@ namespace sandboxer.permissions
                 file.WriteLine("  <MappedFolders>");
                 file.WriteLine("    <MappedFolder>");
                 file.WriteLine("      <HostFolder>" + SandboxerGlobalSetting.WorkingDirectory +"</HostFolder>");
-                file.WriteLine("      <SandboxFolder>" + @"G:\" +"</SandboxFolder>");
+                file.WriteLine("      <SandboxFolder>" + @"c:\MountedFolder\" +"</SandboxFolder>");
                 file.WriteLine("      <ReadOnly>" + (SandboxerGlobalSetting.PermissionSelections.FileSystemAcess ? "True" : "False") + "</ReadOnly>");
                 file.WriteLine("    </MappedFolder>");
                 file.WriteLine("  </MappedFolders>");
                 file.WriteLine("  <LogonCommand>");
-                file.WriteLine("    <Command>" + SandboxerGlobalSetting.ProgramToRun + " " + string.Join(" ", SandboxerGlobalSetting.ArgumentsForProgram) + "</Command>");
+                file.WriteLine("    <Command>" + @"c:\MountedFolder\" + SandboxerGlobalSetting.ProgramToRun + " " + string.Join(" ", SandboxerGlobalSetting.ArgumentsForProgram) + "</Command>");
                 file.WriteLine("  </LogonCommand>");
 
                 // writing custom permissions to file

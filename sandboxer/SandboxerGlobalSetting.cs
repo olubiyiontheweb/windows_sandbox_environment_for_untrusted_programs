@@ -4,9 +4,21 @@ using System.Collections.Generic;
 using System.Security.Permissions;
 
 using sandboxer.Definitions;
+using sandboxer.interactive;
 
 namespace sandboxer
 {
+
+    /// <summary>
+        /// Type for configuring supported permissions
+        /// </summary>
+        public class PermissionDict
+        {
+            public bool Networking { get; set; }
+            public bool FileSystemAcess { get; set; }
+            public bool Execution { get; set; }
+        }
+        
     static class SandboxerGlobalSetting
     {
         #region Sandboxer global settings
@@ -14,7 +26,7 @@ namespace sandboxer
         // Initializing default settings for the Sanboxer
         // private variables 
         private static bool debugmode = false;
-        private static RunningModes running_mode = RunningModes.CONSOLE;
+        private static RunningModes running_mode = RunningModes.INTERACTIVE;
         private static LogModes log_mode = LogModes.CONSOLE;
         private static States state = States.INIT;
         private static string program_to_run = string.Empty;
@@ -28,6 +40,8 @@ namespace sandboxer
             Execution = false,
         };
         private static List<string> custom_permissions = new List<string>();
+
+        private static ISandboxerUI sandboxer_ui_instance = null;
 
         // public getter and setter methods
         public static bool DebugMode
@@ -82,20 +96,33 @@ namespace sandboxer
             set { custom_permissions = value; }
         }
 
-        #endregion
-
-        #region public class methods
-
-        /// <summary>
-        /// Type for configuring supported permissions
-        /// </summary>
-        public class PermissionDict
+        public static ISandboxerUI SandboxerUIInstance
         {
-            public bool Networking { get; set; }
-            public bool FileSystemAcess { get; set; }
-            public bool Execution { get; set; }
+            get { return sandboxer_ui_instance; }
+            set { sandboxer_ui_instance = value; }
         }
 
         #endregion
+
+        public static void RedirectMessageDisplay(string custom_message)
+        {
+            // append to the console box in windows forms
+            if(RunningMode == RunningModes.INTERACTIVE)
+            {
+                try
+                {
+                    // append to the console box in windows forms
+                    SandboxerGlobalSetting.SandboxerUIInstance.errorMessage = custom_message;
+                }
+                catch (Exception e)
+                {                        
+                    // do nothing;
+                }
+            }
+            else
+            {
+                SandboxerGlobalSetting.RedirectMessageDisplay(custom_message);
+            }
+        }
     }
 }

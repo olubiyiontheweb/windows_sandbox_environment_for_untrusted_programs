@@ -33,7 +33,7 @@ namespace sandboxer
             switch (question)
             {
                 case "program":
-                    Console.WriteLine("\nPlease enter the path to the program you want to run in the sandbox: ");
+                    SandboxerGlobalSetting.RedirectMessageDisplay("\nPlease enter the file name of the program you want to run in the sandbox (remember to place the file in the current/working directory): ");
                     string program = Console.ReadLine();
                     if (File.Exists(program))
                     {
@@ -54,7 +54,7 @@ namespace sandboxer
                     }
                     break;
                 case "arguments":
-                    Console.WriteLine("\nEnter the arguments for the program you want to run in the sandbox: ");
+                    SandboxerGlobalSetting.RedirectMessageDisplay("\nEnter the arguments for the program you want to run in the sandbox: ");
                     string arguments = Console.ReadLine();
                     if (arguments != string.Empty)
                     {
@@ -62,7 +62,7 @@ namespace sandboxer
                     }
                     break;
                 case "workingdir":
-                    Console.WriteLine("\nEnter the working directory for the program you want to run in the sandbox: ");
+                    SandboxerGlobalSetting.RedirectMessageDisplay("\nEnter the working directory for the program you want to run in the sandbox: ");
                     string workingdir = Console.ReadLine();
                     if (Directory.Exists(workingdir))
                     {
@@ -83,9 +83,9 @@ namespace sandboxer
                     }
                     break;
                 case "permissionselections":
-                    Console.WriteLine("\nEnter the supported permissions you want to grant to the program (N/E/F): ");
+                    SandboxerGlobalSetting.RedirectMessageDisplay("\nEnter the supported permissions you want to grant to the program (N/E/F): ");
                     string permissions = Console.ReadLine();
-                    SandboxerGlobalSetting.PermissionDict permissionStruct = new SandboxerGlobalSetting.PermissionDict();
+                    PermissionDict permissionStruct = new PermissionDict();
                     if (permissions.Contains("N"))
                     {
                         permissionStruct.Networking = true;
@@ -105,7 +105,7 @@ namespace sandboxer
 
                     break;
                 case "custompermissions":
-                    Console.WriteLine("\nEnter the custom permissions you want to grant to the program (refer to user manual): ");
+                    SandboxerGlobalSetting.RedirectMessageDisplay("\nEnter the custom permissions you want to grant to the program (refer to user manual): ");
                     string custompermissions = Console.ReadLine();
                     if (custompermissions != string.Empty)
                     {
@@ -113,10 +113,10 @@ namespace sandboxer
                     }
                     break;
                 case "mode":
-                    Console.WriteLine("\nOne more thing, please enter the sandbox mode you want to run the program in: ");
-                    Console.WriteLine("\n0. Console");
-                    Console.WriteLine("1. PowershellVM");
-                    Console.WriteLine("2. Interactive");
+                    SandboxerGlobalSetting.RedirectMessageDisplay("\nOne more thing, please enter the sandbox mode you want to run the program in: ");
+                    SandboxerGlobalSetting.RedirectMessageDisplay("\n0. Console");
+                    SandboxerGlobalSetting.RedirectMessageDisplay("1. PowershellVM");
+                    SandboxerGlobalSetting.RedirectMessageDisplay("2. Interactive");
                     SandboxerGlobalSetting.RunningMode = (RunningModes)Enum.Parse(typeof(RunningModes), Console.ReadLine(), true);
                     break;                        
                 default:
