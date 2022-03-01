@@ -10,20 +10,6 @@ using sandboxer.Definitions;
 using sandboxer.interactive;
 using sandboxer.winsand;
 
-// TODO: load the interactive sanboxer and run with a different appdomain
-
-// how to run the powershell version
-// https://jdhitsolutions.com/blog/powershell/7621/doing-more-with-windows-sandbox/
-// https://docs.microsoft.com/en-us/windows/security/threat-protection/windows-sandbox/windows-sandbox-overview#:~:text=To%20enable%20Sandbox%20using%20PowerShell,it%20for%20the%20first%20time.
-// https://answers.microsoft.com/en-us/windows/forum/all/windows-sandbox-failed-to-start/7dc9379a-dcfb-47f7-8c5b-3ae0002b5991
-// https://docs.microsoft.com/en-us/windows/security/threat-protection/windows-sandbox/windows-sandbox-configure-using-wsb-file
-// https://docs.microsoft.com/en-us/windows/security/threat-protection/windows-sandbox/windows-sandbox-architecture
-
-// how to run the dotnet version
-// https://docs.microsoft.com/en-us/dotnet/api/system.security.permissionset?view=netframework-4.7.2
-// https://docs.microsoft.com/en-us/dotnet/api/system.security.permissionset.fromxml?view=netframework-4.7.2#system-security-permissionset-fromxml(system-security-securityelement)
-// https://docs.microsoft.com/en-us/dotnet/api/system.net.networkinformation.networkinformationpermission?view=netframework-4.7.2
-
 namespace sandboxer
 {
     partial class Program
@@ -31,8 +17,6 @@ namespace sandboxer
         static void Main(string[] args)
         {
             Console.WriteLine("\nNow running sandboxer for the first time ...\n");
-            string programs_to_run = string.Empty;
-            string arguments_for_program = string.Empty;
 
             CommandLine.Parser.Default.ParseArguments<OptionsManager>(args)
                 .WithParsed<OptionsManager>(opts =>
@@ -42,22 +26,10 @@ namespace sandboxer
                         Console.WriteLine("Debug mode is on\n");
                         SandboxerGlobalSetting.DebugMode = true;
                     }
-                    else if (opts.Program != null)
+                    else if (opts.PassArguments)
                     {
-                        programs_to_run = opts.Program;
+                        AskUserInteractively("all");
                     }
-                    else if (opts.Arguments != null)
-                    {
-                        arguments_for_program = opts.Arguments;
-                    }
-                    else if (opts.Mode != null)
-                    {
-                        SandboxerGlobalSetting.RunningMode = (RunningModes)Enum.Parse(typeof(RunningModes), opts.Mode);
-                    }
-                    else if (opts.LogMode != null)
-                    {
-                        SandboxerGlobalSetting.LogMode = (LogModes)Enum.Parse(typeof(LogModes), opts.LogMode);
-                    }       
                 })
                 .WithNotParsed<OptionsManager>((errs) =>
                 {
@@ -77,7 +49,7 @@ namespace sandboxer
 
             while(SandboxerGlobalSetting.State == States.RUNNING)
             {
-                // check if we're going ahead with powershell or dotnet route else open windows sandbox if we're in powershel mode
+                // check if we're going ahead with powershell or dotnet route
                 try
                 {
                     if (SandboxerGlobalSetting.RunningMode == RunningModes.INTERACTIVE)
@@ -110,12 +82,12 @@ namespace sandboxer
                     }
                     else if (SandboxerGlobalSetting.RunningMode == RunningModes.CONSOLE)
                     {
-                        ConsoleExtension.Show();
+                        // ConsoleExtension.Show();
                         Console.WriteLine("\nRunning sandboxer in {0} mode", SandboxerGlobalSetting.RunningMode);
 
-                        if(programs_to_run != string.Empty)
+                        if(SandboxerGlobalSetting.ProgramToRun != string.Empty)
                         {
-                            LoadSandboxEnvironment(programs_to_run, arguments_for_program);
+                            LoadSandboxEnvironment();
                         }
                     }
                     else if (SandboxerGlobalSetting.RunningMode == RunningModes.POWERSHELLVM)
@@ -131,32 +103,18 @@ namespace sandboxer
                     RuntimeException.Debug("Error: " + e.Message);
                 }
 
-                string input = "";
+                // null all values
+                SandboxerGlobalSetting.ProgramToRun = string.Empty;
+                SandboxerGlobalSetting.ArgumentsForProgram = null;
                 
                 if(SandboxerGlobalSetting.RunningMode != RunningModes.INTERACTIVE)
                 {
-                    Console.WriteLine("Press the enter key to close the sandboxer or type in the path to the program you want to run in the Sandbox: ");
-                    input = Console.ReadLine();
+                    AskUserInteractively("all");
+                }
 
-                    if (string.IsNullOrWhiteSpace(input))
-                    {
-                        SandboxerGlobalSetting.State = States.EXIT;
-                    }
-                    else
-                    {
-                        // parse the input to get the program and arguments
-                        string[] input_split = input.Split(' ');
-                        programs_to_run = input_split[0];
-
-                        if (input_split.Length > 1)
-                        {
-                            arguments_for_program = input_split[1];
-                        } 
-                        else
-                        {
-                            arguments_for_program = string.Empty;
-                        }
-                    }
+                if(SandboxerGlobalSetting.ProgramToRun == string.Empty)
+                {
+                    SandboxerGlobalSetting.State = States.EXIT;
                 }
             }
         }
@@ -188,10 +146,10 @@ namespace sandboxer
         /// <summary>
         /// Loads the sandbox environment for the dotnet route
         /// </summary>
-        static void LoadSandboxEnvironment(string programs_to_run, string arguments)
+        static void LoadSandboxEnvironment()
         {
             SandboxEnvironment sandbox_environment = new SandboxEnvironment();
-            sandbox_environment.InitalizeEnvironment(programs_to_run, arguments);
-        }
+            sandbox_environment.InitalizeEnvironment();
+        }        
     }
 }

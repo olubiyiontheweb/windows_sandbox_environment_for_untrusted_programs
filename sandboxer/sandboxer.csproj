@@ -150,6 +150,7 @@
     <Compile Include="ConsoleExtension.cs" />
     <Compile Include="interactive\ISandboxerUI.cs" />
     <Compile Include="OptionsManager.cs" />
+    <Compile Include="PermissionManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RuntimeException.cs" />

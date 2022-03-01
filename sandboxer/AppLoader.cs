@@ -5,6 +5,8 @@ using System.Security.Permissions;
 using System.Reflection.Metadata;
 using System.Reflection.PortableExecutable;
 
+using sandboxer.permissions;
+
 namespace sandboxer.AppLoader
 {
     /// <summary>
@@ -61,22 +63,21 @@ namespace sandboxer.AppLoader
         /// <summary>
         /// initialize app domain with permissions and security level
         /// </summary>
-        public void InitalizeEnvironment(string programName, string arguments)
+        public void InitalizeEnvironment()
         {
-            var baseDirectory = Environment.CurrentDirectory; // AppDomain.CurrentDomain.BaseDirectory;
-            Console.WriteLine("Running program {0} ....", baseDirectory + @"\"+ programName);
+            Console.WriteLine("Running program {0} ....", SandboxerGlobalSetting.ProgramToRun);
 
-            Byte[] fileBytes = File.ReadAllBytes(programName);
+            Byte[] fileBytes = File.ReadAllBytes(SandboxerGlobalSetting.ProgramToRun);
 
             AppDomainSetup setup = new AppDomainSetup();
             
             try
             {
-                setup.ApplicationBase = baseDirectory;
+                setup.ApplicationBase = SandboxerGlobalSetting.WorkingDirectory;
 
                 if (setup.ApplicationBase == null)
                 {
-                    string error_message = "The program path is not valid: " + programName;
+                    string error_message = "The program path is not valid: " + SandboxerGlobalSetting.ProgramToRun;
                     RuntimeException.Debug(error_message);
                 }
             }
@@ -85,26 +86,8 @@ namespace sandboxer.AppLoader
                 RuntimeException.Debug(e.Message);
             }
 
-            // selecting few security permissions here. 
-            // user can specify more in the during use.
-            // https://docs.microsoft.com/en-us/dotnet/api/system.security.codeaccesspermission?view=netframework-4.7.2
-            PermissionSet allowedSet = new PermissionSet(PermissionState.None);
-            
-            try
-            {
-                allowedSet.AddPermission(new SecurityPermission(SecurityPermissionFlag.Execution));
-                allowedSet.AddPermission(new SecurityPermission(SecurityPermissionFlag.SerializationFormatter));
-                allowedSet.AddPermission (new UIPermission (PermissionState.Unrestricted));
-                allowedSet.AddPermission(new FileIOPermission(FileIOPermissionAccess.AllAccess, baseDirectory));
-                allowedSet.AddPermission(new ReflectionPermission(ReflectionPermissionFlag.MemberAccess));
-
-                // only allow the current directory of the file to be accessed
-                allowedSet.Demand();
-            }
-            catch (Exception e)
-            {                
-                RuntimeException.Debug("Error: Sandbox could not set permissions for the program", e.Message);
-            }
+            // getting user defined permissions
+            PermissionSet allowedSet = PermissionManager.AddPermissionsToSet();
 
             try
             {
@@ -118,27 +101,24 @@ namespace sandboxer.AppLoader
                 RuntimeException.Debug("Error: Application domain could not be created", e.Message);
             }
 
-            if (IsFileAnAssembly(programName))
+            if (IsFileAnAssembly(SandboxerGlobalSetting.ProgramToRun))
             {
-                Console.WriteLine("Loading assembly: " + programName);
+                Console.WriteLine("Loading assembly: " + SandboxerGlobalSetting.ProgramToRun);
                 try
-                {                    
-                    // parse arguments into array
-                    string[] args = arguments.Split(' ');
-
+                {
                     // load and execute the assembly file into the application domain
-                    sandbox_domain.ExecuteAssembly(baseDirectory + @"\" + programName, args);
+                    sandbox_domain.ExecuteAssembly(SandboxerGlobalSetting.ProgramToRun, SandboxerGlobalSetting.ArgumentsForProgram);
                     AppDomain.Unload(sandbox_domain);
                 }
                 catch (Exception e)
                 {
-                    string error_message = "Security Error: file " + programName + " could not be executed";
+                    string error_message = "Security Error: file " + SandboxerGlobalSetting.ProgramToRun + " could not be executed";
                     RuntimeException.Debug(error_message, e.Message);
                 }
             }
             else
             {
-                RuntimeException.Debug("Error: " + programName + " is not a valid assembly file");
+                RuntimeException.Debug("Error: " + SandboxerGlobalSetting.ProgramToRun + " is not a valid assembly file");
             }
         }
     }

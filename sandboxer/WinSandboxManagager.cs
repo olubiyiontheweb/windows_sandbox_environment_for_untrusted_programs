@@ -1,15 +1,16 @@
 ﻿using System;
+using System.IO;
 using System.Diagnostics;
 using System.Management.Automation;
 using System.Collections.ObjectModel;
 
 using sandboxer;
+using sandboxer.permissions;
 
 namespace sandboxer.winsand
 {
     public static class WinSandboxManagager
     {
-        static string basedir = Environment.CurrentDirectory;
         static string error_message = "You need to run this program as administrator to install Windows Sandbox feature.";
 
         public static bool CheckWindowsValidity()
@@ -83,12 +84,13 @@ namespace sandboxer.winsand
             }        
         }
 
-        private static void DoesFileExist(string file_path)
+        private static bool DoesFileExist(string file_path)
         {
-            if (!System.IO.File.Exists(file_path))
+            if (!File.Exists(file_path))
             {
-                throw new RuntimeException("File not found: " + file_path + "\n");
+                return false;
             }
+            return true;
         }
 
         public static void RunWindowsSandbox()
@@ -99,10 +101,16 @@ namespace sandboxer.winsand
 
                 string windir = Environment.GetEnvironmentVariable("windir");
 
-                DoesFileExist(basedir + @"\windows_sanbox_config.wsb");
+                // create custom configuration file for windows sandbox
+                PermissionManager.CreateConfigurationFile();
+
+                // check if user defined config file exists or we use default one
+                string config_filename = DoesFileExist(SandboxerGlobalSetting.WorkingDirectory + @"\user_defined_sanbox_config.wsb") ?
+                    SandboxerGlobalSetting.WorkingDirectory + @"\user_defined_sanbox_config.wsb" :
+                    SandboxerGlobalSetting.WorkingDirectory + @"\windows_sanbox_config.wsb";
 
                 // Now that we've confirmed Windows sandbox is enabled, we can run it with the new configuration
-                Process process = Process.Start(windir + @"\Sysnative\WindowsSandbox.exe", basedir + @"\windows_sanbox_config.wsb");
+                Process process = Process.Start(windir + @"\Sysnative\WindowsSandbox.exe", config_filename);
                 process.WaitForExit();
             }
             catch (RuntimeException e)

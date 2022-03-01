@@ -1,4 +1,9 @@
-﻿using sandboxer.Definitions;
+﻿using System;
+using System.Security;
+using System.Collections.Generic;
+using System.Security.Permissions;
+
+using sandboxer.Definitions;
 
 namespace sandboxer
 {
@@ -9,10 +14,20 @@ namespace sandboxer
         // Initializing default settings for the Sanboxer
         // private variables 
         private static bool debugmode = false;
-        private static RunningModes running_mode = RunningModes.INTERACTIVE;
+        private static RunningModes running_mode = RunningModes.CONSOLE;
         private static LogModes log_mode = LogModes.CONSOLE;
-        private static SecurityLevels security_level = SecurityLevels.DEFAULT;
-        private static States state;
+        private static States state = States.INIT;
+        private static string program_to_run = string.Empty;
+        private static string[] arguments_for_program = null;
+        private static string working_directory = Environment.CurrentDirectory;
+
+        private static PermissionDict permission_selections = new PermissionDict()
+        {
+            Networking = false,
+            FileSystemAcess = false,
+            Execution = false,
+        };
+        private static List<string> custom_permissions = new List<string>();
 
         // public getter and setter methods
         public static bool DebugMode
@@ -30,16 +45,56 @@ namespace sandboxer
             get { return log_mode; }
             set { log_mode = value; }
         }
-        public static SecurityLevels SecurityLevel
-        {
-            get { return security_level; }
-            set { security_level = value; }
-        }
+
         public static States State
         {
             get { return state; }
             set { state = value; }
-        }        
+        }
+
+        public static string ProgramToRun
+        {
+            get { return program_to_run; }
+            set { program_to_run = value; }
+        }
+
+        public static string[] ArgumentsForProgram
+        {
+            get { return arguments_for_program; }
+            set { arguments_for_program = value; }
+        }
+
+        public static string WorkingDirectory
+        {
+            get { return working_directory; }
+            set { working_directory = value; }
+        }
+
+        public static PermissionDict PermissionSelections
+        {
+            get { return permission_selections; }
+            set { permission_selections = value; }
+        }
+
+        public static List<string> CustomPermissions
+        {
+            get { return custom_permissions; }
+            set { custom_permissions = value; }
+        }
+
+        #endregion
+
+        #region public class methods
+
+        /// <summary>
+        /// Type for configuring supported permissions
+        /// </summary>
+        public class PermissionDict
+        {
+            public bool Networking { get; set; }
+            public bool FileSystemAcess { get; set; }
+            public bool Execution { get; set; }
+        }
 
         #endregion
     }
