@@ -37,9 +37,9 @@ namespace sandboxer
                         // append to the console box in windows forms
                         SandboxerGlobalSetting.SandboxerUIInstance.errorMessage = custom_message;
                     }
-                    catch (System.Exception)
+                    catch (Exception)
                     {                        
-                        throw;
+                        // do nothing
                     }
                 }
                 else
@@ -62,7 +62,22 @@ namespace sandboxer
         {   
             if (SandboxerGlobalSetting.LogMode == LogModes.CONSOLE)
             {                
-                Debug(custom_message);
+                if(SandboxerGlobalSetting.RunningMode == RunningModes.INTERACTIVE)
+                {
+                    try
+                    {
+                        // append to the console box in windows forms
+                        SandboxerGlobalSetting.SandboxerUIInstance.errorMessage = custom_message;
+                    }
+                    catch (Exception)
+                    {                        
+                        // do nothing
+                    }
+                }
+                else
+                {
+                    Console.WriteLine(custom_message);
+                }
 
                 if(SandboxerGlobalSetting.DebugMode == true)
                 {
@@ -75,7 +90,7 @@ namespace sandboxer
                         }
                         catch (System.Exception)
                         {                        
-                            throw;
+                            // do nothing
                         }
                     }
                 }

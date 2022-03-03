@@ -18,7 +18,7 @@ namespace sandboxer
             public bool FileSystemAcess { get; set; }
             public bool Execution { get; set; }
         }
-        
+
     static class SandboxerGlobalSetting
     {
         #region Sandboxer global settings
@@ -31,8 +31,7 @@ namespace sandboxer
         private static States state = States.INIT;
         private static string program_to_run = string.Empty;
         private static string[] arguments_for_program = null;
-        private static string working_directory = Environment.CurrentDirectory;
-
+        private static string working_directory = AppDomain.CurrentDomain.BaseDirectory;
         private static PermissionDict permission_selections = new PermissionDict()
         {
             Networking = false,
@@ -107,21 +106,21 @@ namespace sandboxer
         public static void RedirectMessageDisplay(string custom_message)
         {
             // append to the console box in windows forms
-            if(RunningMode == RunningModes.INTERACTIVE)
+            if(running_mode == RunningModes.INTERACTIVE)
             {
                 try
                 {
                     // append to the console box in windows forms
-                    SandboxerGlobalSetting.SandboxerUIInstance.errorMessage = custom_message;
+                    sandboxer_ui_instance.errorMessage = custom_message;
                 }
-                catch (Exception e)
+                catch (Exception)
                 {                        
                     // do nothing;
                 }
             }
             else
             {
-                SandboxerGlobalSetting.RedirectMessageDisplay(custom_message);
+                Console.WriteLine(custom_message);
             }
         }
     }

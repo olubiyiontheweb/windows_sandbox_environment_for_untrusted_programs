@@ -18,7 +18,7 @@ namespace sandboxer
         {
             // let's initialize instance of the interactive sandboxer by reflection before we continue
             InitializeSanboxerUI();
-            
+
             SandboxerGlobalSetting.RedirectMessageDisplay("\nNow running sandboxer for the first time ...\n");
 
             CommandLine.Parser.Default.ParseArguments<OptionsManager>(args)
@@ -56,18 +56,10 @@ namespace sandboxer
                 // check if we're going ahead with powershell or dotnet route
                 try
                 {
-                    if (SandboxerGlobalSetting.RunningMode == RunningModes.INTERACTIVE)
-                    {
-                        // hide the console window
-                        ConsoleExtension.Hide();
-
-                        // show the UI
-                        SandboxerGlobalSetting.SandboxerUIInstance.ShowUI();
-                    }
-                    else if (SandboxerGlobalSetting.RunningMode == RunningModes.CONSOLE)
+                    if (SandboxerGlobalSetting.RunningMode == RunningModes.CONSOLE)
                     {
                         // ConsoleExtension.Show();
-                        string message = "\nRunning sandboxer in " + SandboxerGlobalSetting.RunningMode + "mode";
+                        string message = "\nRunning sandboxer in " + SandboxerGlobalSetting.RunningMode + " mode";
                         SandboxerGlobalSetting.RedirectMessageDisplay(message);
 
                         if(SandboxerGlobalSetting.ProgramToRun != string.Empty)
@@ -77,10 +69,21 @@ namespace sandboxer
                     }
                     else if (SandboxerGlobalSetting.RunningMode == RunningModes.POWERSHELLVM)
                     {
-                        string message = "\nRunning sandboxer in " + SandboxerGlobalSetting.RunningMode + "mode";
+                        string message = "\nRunning sandboxer in " + SandboxerGlobalSetting.RunningMode + " mode";
                         SandboxerGlobalSetting.RedirectMessageDisplay(message);
                         SandboxerGlobalSetting.RedirectMessageDisplay("Starting Windows Sandbox ...\n");
                         StartWindowsSandbox();
+                    }
+                    else  if (SandboxerGlobalSetting.RunningMode == RunningModes.INTERACTIVE)
+                    {
+                        string message = "\nRunning sandboxer in " + SandboxerGlobalSetting.RunningMode + " mode";
+                        SandboxerGlobalSetting.RedirectMessageDisplay(message);
+                        
+                        // hide the console window
+                        //ConsoleExtension.Hide();
+
+                        // show the UI
+                        SandboxerGlobalSetting.SandboxerUIInstance.ShowUI();
                     }
                 }
                 catch (Exception e)

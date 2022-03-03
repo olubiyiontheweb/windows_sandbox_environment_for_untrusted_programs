@@ -30,7 +30,7 @@ namespace interactiveSandboxer
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-            textBox1.Text = Variables.error_message;
+            //textBox1.AppendText(Variables.error_message);
         }
 
         private void label6_Click(object sender, EventArgs e)

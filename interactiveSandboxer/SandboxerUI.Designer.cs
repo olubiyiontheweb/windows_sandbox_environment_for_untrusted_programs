@@ -85,7 +85,6 @@ namespace interactiveSandboxer
             // 
             // textBox1
             // 
-            this.textBox1.Enabled = false;
             this.textBox1.HideSelection = false;
             this.textBox1.Location = new System.Drawing.Point(56, 288);
             this.textBox1.Multiline = true;
