@@ -28,15 +28,16 @@ namespace sandboxer.permissions
             {
                 // add all supported permissions to the permission set
                 if (SandboxerGlobals.PermissionSelections.Execution == true)
+                {
                     permission_set.AddPermission(new SecurityPermission(SecurityPermissionFlag.Execution));
                     SandboxerGlobals.RedirectMessageDisplay("Added Execution permission");
-                    SandboxerGlobals.RedirectMessageDisplay(SandboxerGlobals.PermissionSelections.Execution.ToString());
+                }
 
                 if (SandboxerGlobals.PermissionSelections.FileSystemAcess == true)
+                {
                     permission_set.AddPermission(new FileIOPermission(FileIOPermissionAccess.AllAccess, SandboxerGlobals.WorkingDirectory));
                     SandboxerGlobals.RedirectMessageDisplay("Added FileIOPermission permission");
-                    SandboxerGlobals.RedirectMessageDisplay(SandboxerGlobals.PermissionSelections.FileSystemAcess.ToString());
-
+                }
 
                 // adding some required permissions to the sandbox
                 permission_set.AddPermission (new UIPermission (PermissionState.Unrestricted));

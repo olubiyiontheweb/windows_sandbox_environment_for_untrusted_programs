@@ -229,6 +229,7 @@ namespace interactiveSandboxer
             // consolelog
             // 
             this.consolelog.FormattingEnabled = true;
+            this.consolelog.HorizontalScrollbar = true;
             this.consolelog.Location = new System.Drawing.Point(56, 286);
             this.consolelog.Name = "consolelog";
             this.consolelog.Size = new System.Drawing.Size(678, 134);

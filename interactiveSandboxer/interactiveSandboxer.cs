@@ -43,9 +43,6 @@ namespace interactiveSandboxer
             error_message.Add(" ");
             error_message.Add("Execution from UI started");
             error_message.Add(" ");
-            error_message.Add("Sandbox mode: Execution" + available_permissions.Execution.ToString());
-            error_message.Add("Sandbox mode: FileSystemAcess" + available_permissions.FileSystemAcess.ToString());
-            error_message.Add("Sandbox mode: Networking" + available_permissions.Networking.ToString());
 
             ExecuteFromUI.PopulateGlobalVariables();
 

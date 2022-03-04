@@ -39,6 +39,7 @@ namespace sandboxer
                     else
                     {
                         RuntimeException.Debug("Unrecognized arguments provided: " + string.Join(", ", errs));
+                        return;
                     }
                 });
 
@@ -76,7 +77,7 @@ namespace sandboxer
                         SandboxerGlobals.RedirectMessageDisplay(message);
                         
                         // hide the console window
-                        ConsoleExtension.Hide();
+                        // ConsoleExtension.Hide();
 
                         // show the UI
                         SandboxerGlobals.SandboxerUIInstance.ShowUI();
