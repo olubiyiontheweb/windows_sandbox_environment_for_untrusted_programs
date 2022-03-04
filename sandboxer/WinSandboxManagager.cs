@@ -103,12 +103,15 @@ namespace sandboxer.winsand
                 string windir = Environment.GetEnvironmentVariable("windir");
 
                 // create custom configuration file for windows sandbox
+                SandboxerGlobals.RedirectMessageDisplay("Creating Windows Sandbox configuration file...");
                 PermissionManager.CreateConfigurationFile();
 
                 // check if user defined config file exists or we use default one
                 string config_filename = DoesFileExist(SandboxerGlobals.WorkingDirectory + @"\user_defined_sanbox_config.wsb") ?
-                    SandboxerGlobals.WorkingDirectory + @"\user_defined_sanbox_config.wsb" :
-                    SandboxerGlobals.WorkingDirectory + @"\windows_sanbox_config.wsb";
+                    Path.Combine(SandboxerGlobals.WorkingDirectory + @"\user_defined_sanbox_config.wsb") :
+                    Path.Combine(SandboxerGlobals.WorkingDirectory, @"\windows_sanbox_config.wsb");
+
+                SandboxerGlobals.RedirectMessageDisplay(" - Windows Sandbox configuration file: " + config_filename + " created.");
 
                 // Now that we've confirmed Windows sandbox is enabled, we can run it with the new configuration
                 Process process = Process.Start(windir + @"\Sysnative\WindowsSandbox.exe", config_filename);

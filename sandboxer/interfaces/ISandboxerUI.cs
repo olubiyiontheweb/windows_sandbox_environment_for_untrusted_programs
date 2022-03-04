@@ -46,6 +46,11 @@ namespace sandboxer.interactive
         /// </summary>
         void ShowUI();
 
+        /// <summary>
+        /// this method will get the current checked permissions at the time of button click
+        /// </summary>
+        void GetCurrentPermissions();
+
         void RefreshConsoleLog();
     }
 }

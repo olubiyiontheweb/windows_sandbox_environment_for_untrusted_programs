@@ -60,40 +60,7 @@ namespace interactiveSandboxer
 
         private void checkedListBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            // update available permissions by checked items
-            for (int i = 0; i < (checkedpermissions.Items.Count); i++)  
-            {  
-                if (checkedpermissions.GetItemChecked(i))  
-                {
-                    if(checkedpermissions.Items[i].ToString() == "Directory Access")
-                    {
-                        Variables.available_permissions.FileSystemAcess = true;
-                    }
-                    else if (checkedpermissions.Items[i].ToString() == "Network Access")
-                    {
-                        Variables.available_permissions.Networking = true;
-                    }
-                    else if (checkedpermissions.Items[i].ToString() == "Execution Permission")
-                    {
-                        Variables.available_permissions.Execution = true;
-                    }
-                }
-                else
-                {
-                    if (checkedpermissions.Items[i].ToString() == "Directory Access")
-                    {
-                        Variables.available_permissions.FileSystemAcess = false;
-                    }
-                    else if (checkedpermissions.Items[i].ToString() == "Network Access")
-                    {
-                        Variables.available_permissions.Networking = false;
-                    }
-                    else if (checkedpermissions.Items[i].ToString() == "Execution Permission")
-                    {
-                        Variables.available_permissions.Execution = false;
-                    }
-                }
-            }
+            
         }
 
         private void label8_Click(object sender, EventArgs e)

@@ -65,6 +65,8 @@ namespace sandboxer
 
             SandboxerGlobals.ArgumentsForProgram = SandboxerGlobals.SandboxerUIInstance.Arguments;
 
+            SandboxerGlobals.SandboxerUIInstance.GetCurrentPermissions();
+
             SandboxerGlobals.PermissionSelections = SandboxerGlobals.SandboxerUIInstance.availablePermissions;
 
             SandboxerGlobals.CustomPermissions = SandboxerGlobals.SandboxerUIInstance.customPermissions;
@@ -72,12 +74,26 @@ namespace sandboxer
             // checking the sandbox mode selected so we can run it accordingly
             if (SandboxerGlobals.SandboxerUIInstance.sandboxMode == RunningModes.POWERSHELLVM)
             {
-                SandboxerGlobals.StartWindowsSandbox();
+                try
+                {
+                    SandboxerGlobals.StartWindowsSandbox();
+                }
+                catch (Exception ex)
+                {
+                    RuntimeException.Debug(ex.Message);
+                }                
                 return;
             }
             else
             {
-                SandboxerGlobals.LoadSandboxEnvironment();
+                try
+                {
+                    SandboxerGlobals.LoadSandboxEnvironment();
+                }
+                catch (Exception ex)
+                {
+                    RuntimeException.Debug(ex.Message);
+                }                
                 return;
             }
         }
@@ -94,7 +110,7 @@ namespace sandboxer
         private static LogModes log_mode = LogModes.CONSOLE;
         private static States state = States.INIT;
         private static string program_to_run = string.Empty;
-        private static string[] arguments_for_program = null;
+        private static string[] arguments_for_program = new string[0];
         private static string working_directory = AppDomain.CurrentDomain.BaseDirectory;
         private static PermissionDict permission_selections = new PermissionDict()
         {

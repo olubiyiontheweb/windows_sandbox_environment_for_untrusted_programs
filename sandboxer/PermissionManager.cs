@@ -91,11 +91,11 @@ namespace sandboxer.permissions
                 file.WriteLine("    <MappedFolder>");
                 file.WriteLine("      <HostFolder>" + SandboxerGlobals.WorkingDirectory +"</HostFolder>");
                 file.WriteLine("      <SandboxFolder>" + @"c:\MountedFolder\" +"</SandboxFolder>");
-                file.WriteLine("      <ReadOnly>" + (SandboxerGlobals.PermissionSelections.FileSystemAcess ? "True" : "False") + "</ReadOnly>");
+                file.WriteLine("      <ReadOnly>" + (SandboxerGlobals.PermissionSelections.FileSystemAcess ? "False" : "True") + "</ReadOnly>");
                 file.WriteLine("    </MappedFolder>");
                 file.WriteLine("  </MappedFolders>");
                 file.WriteLine("  <LogonCommand>");
-                file.WriteLine("    <Command>" + @"c:\MountedFolder\" + SandboxerGlobals.ProgramToRun + " " + string.Join(" ", SandboxerGlobals.ArgumentsForProgram) + "</Command>");
+                file.WriteLine("    <Command>" + Path.Combine(@"c:\MountedFolder\", SandboxerGlobals.ProgramToRun) + " " + string.Join(" ", SandboxerGlobals.ArgumentsForProgram) + "</Command>");
                 file.WriteLine("  </LogonCommand>");
 
                 // writing custom permissions to file

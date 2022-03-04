@@ -20,7 +20,7 @@ namespace interactiveSandboxer
         // set sandbox mode to none
         public static RunningModes sandbox_mode = RunningModes.NONE;
         public static string program_name = string.Empty;
-        public static string[] arguments = null;
+        public static string[] arguments = new string[0];
         public static List<string> error_message = new List<string>();
         public static PermissionDict available_permissions = new PermissionDict()
         {
@@ -107,6 +107,44 @@ namespace interactiveSandboxer
             Application.SetCompatibleTextRenderingDefault(false);
             Variables.sandboxer_ui = new SandboxerUI();
             Application.Run(Variables.sandboxer_ui);            
+        }
+
+        public void GetCurrentPermissions()
+        {
+            // update available permissions by checked items
+            for (int i = 0; i < (Variables.sandboxer_ui.checkedpermissions.Items.Count); i++)  
+            {  
+                if (Variables.sandboxer_ui.checkedpermissions.GetItemChecked(i))  
+                {
+                    if(Variables.sandboxer_ui.checkedpermissions.Items[i].ToString() == "Directory Access")
+                    {
+                        Variables.available_permissions.FileSystemAcess = true;
+                    }
+                    else if (Variables.sandboxer_ui.checkedpermissions.Items[i].ToString() == "Network Access")
+                    {
+                        Variables.available_permissions.Networking = true;
+                    }
+                    else if (Variables.sandboxer_ui.checkedpermissions.Items[i].ToString() == "Execution Permission")
+                    {
+                        Variables.available_permissions.Execution = true;
+                    }
+                }
+                else
+                {
+                    if (Variables.sandboxer_ui.checkedpermissions.Items[i].ToString() == "Directory Access")
+                    {
+                        Variables.available_permissions.FileSystemAcess = false;
+                    }
+                    else if (Variables.sandboxer_ui.checkedpermissions.Items[i].ToString() == "Network Access")
+                    {
+                        Variables.available_permissions.Networking = false;
+                    }
+                    else if (Variables.sandboxer_ui.checkedpermissions.Items[i].ToString() == "Execution Permission")
+                    {
+                        Variables.available_permissions.Execution = false;
+                    }
+                }
+            }
         }
 
         // this would help us update the log box for new messages about the state of the sandbox
