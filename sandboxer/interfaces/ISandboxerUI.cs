@@ -18,7 +18,7 @@ namespace sandboxer.interactive
         /// <summary>
         /// List of selected permissions
         /// </summary>
-        List<string> selectedPermissions { get; set; }
+        PermissionDict availablePermissions { get; set; }
 
         /// <summary>
         /// The file name of the program to run in the sandbox
@@ -28,7 +28,7 @@ namespace sandboxer.interactive
         /// <summary>
         /// Arguments for the program
         /// </summary>
-        string Arguments { get; set; }
+        string[] Arguments { get; set; }
 
         /// <summary>
         /// Sets the working directory for the sandboxed environment.
@@ -38,11 +38,14 @@ namespace sandboxer.interactive
         /// <summary>
         /// This method will be used to send error messages to the display.
         /// </summary>
-        string errorMessage { get; set; }
+        List<string> errorMessage { get; set; }
+        List<string> customPermissions { get; set; }
 
         /// <summary>
         /// This method will be used to open the Sandboxer UI.
         /// </summary>
         void ShowUI();
+
+        void RefreshConsoleLog();
     }
 }

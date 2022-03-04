@@ -65,21 +65,22 @@ namespace sandboxer.AppLoader
         /// </summary>
         public void InitalizeEnvironment()
         {
-            string message = "Running program " + SandboxerGlobalSetting.ProgramToRun + " ....";
-            SandboxerGlobalSetting.RedirectMessageDisplay(message);
+            string program_path = Path.Combine(SandboxerGlobals.WorkingDirectory, SandboxerGlobals.ProgramToRun);
 
-            Byte[] fileBytes = File.ReadAllBytes(SandboxerGlobalSetting.ProgramToRun);
+            string message = "Running program " + program_path + " ....";
+            SandboxerGlobals.RedirectMessageDisplay(message);
 
             AppDomainSetup setup = new AppDomainSetup();
             
             try
             {
-                setup.ApplicationBase = SandboxerGlobalSetting.WorkingDirectory;
+                setup.ApplicationBase = SandboxerGlobals.WorkingDirectory;
 
                 if (setup.ApplicationBase == null)
                 {
-                    string error_message = "The program path is not valid: " + SandboxerGlobalSetting.ProgramToRun;
+                    string error_message = "The working directory path provided is not valid: ";
                     RuntimeException.Debug(error_message);
+                    return;
                 }
             }
             catch (Exception e)
@@ -100,26 +101,29 @@ namespace sandboxer.AppLoader
             catch (Exception e)
             {                
                 RuntimeException.Debug("Error: Application domain could not be created", e.Message);
+                return;
             }
 
-            if (IsFileAnAssembly(SandboxerGlobalSetting.ProgramToRun))
+            if (IsFileAnAssembly(program_path))
             {
-                SandboxerGlobalSetting.RedirectMessageDisplay("Loading assembly: " + SandboxerGlobalSetting.ProgramToRun);
+                SandboxerGlobals.RedirectMessageDisplay("Loading assembly: " + SandboxerGlobals.ProgramToRun);
                 try
                 {
                     // load and execute the assembly file into the application domain
-                    sandbox_domain.ExecuteAssembly(SandboxerGlobalSetting.ProgramToRun, SandboxerGlobalSetting.ArgumentsForProgram);
+                    sandbox_domain.ExecuteAssembly(program_path, SandboxerGlobals.ArgumentsForProgram);
                     AppDomain.Unload(sandbox_domain);
                 }
                 catch (Exception e)
                 {
-                    string error_message = "Security Error: file " + SandboxerGlobalSetting.ProgramToRun + " could not be executed";
+                    string error_message = "Security Error: file " + SandboxerGlobals.ProgramToRun + " could not be executed";
                     RuntimeException.Debug(error_message, e.Message);
+                    return;
                 }
             }
             else
             {
-                RuntimeException.Debug("Error: " + SandboxerGlobalSetting.ProgramToRun + " is not a valid assembly file");
+                RuntimeException.Debug("Error: " + SandboxerGlobals.ProgramToRun + " is not a valid assembly file");
+                return;
             }
         }
     }

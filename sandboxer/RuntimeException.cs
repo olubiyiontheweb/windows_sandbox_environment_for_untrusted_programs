@@ -2,6 +2,7 @@
 using System.IO;
 using System.Runtime.Serialization;
 
+using sandboxer;
 using sandboxer.AppLoader;
 using sandboxer.Definitions;
 using sandboxer.winsand;
@@ -28,14 +29,15 @@ namespace sandboxer
 
         public static void Debug (string custom_message)
         {   
-            if (SandboxerGlobalSetting.LogMode == LogModes.CONSOLE)
+            if (SandboxerGlobals.LogMode == LogModes.CONSOLE)
             {
-                if(SandboxerGlobalSetting.RunningMode == RunningModes.INTERACTIVE)
+                if(SandboxerGlobals.RunningMode == RunningModes.INTERACTIVE)
                 {
                     try
                     {
                         // append to the console box in windows forms
-                        SandboxerGlobalSetting.SandboxerUIInstance.errorMessage = custom_message;
+                        SandboxerGlobals.SandboxerUIInstance.errorMessage.Add(custom_message);
+                        SandboxerGlobals.SandboxerUIInstance.RefreshConsoleLog();
                     }
                     catch (Exception)
                     {                        
@@ -47,7 +49,7 @@ namespace sandboxer
                     Console.WriteLine(custom_message);
                 }
             }
-            else if (SandboxerGlobalSetting.LogMode == LogModes.FILE)
+            else if (SandboxerGlobals.LogMode == LogModes.FILE)
             {
                 using (StreamWriter writer = new StreamWriter(errorLogFilePath, true))
                 {
@@ -60,14 +62,15 @@ namespace sandboxer
         /// Overloading the debug method
         public static void Debug (string custom_message, string exception_message)
         {   
-            if (SandboxerGlobalSetting.LogMode == LogModes.CONSOLE)
+            if (SandboxerGlobals.LogMode == LogModes.CONSOLE)
             {                
-                if(SandboxerGlobalSetting.RunningMode == RunningModes.INTERACTIVE)
+                if(SandboxerGlobals.RunningMode == RunningModes.INTERACTIVE)
                 {
                     try
                     {
                         // append to the console box in windows forms
-                        SandboxerGlobalSetting.SandboxerUIInstance.errorMessage = custom_message;
+                        SandboxerGlobals.SandboxerUIInstance.errorMessage.Add(custom_message);
+                        SandboxerGlobals.SandboxerUIInstance.RefreshConsoleLog();
                     }
                     catch (Exception)
                     {                        
@@ -79,33 +82,34 @@ namespace sandboxer
                     Console.WriteLine(custom_message);
                 }
 
-                if(SandboxerGlobalSetting.DebugMode == true)
+                if(SandboxerGlobals.DebugMode == true)
                 {
-                    if(SandboxerGlobalSetting.RunningMode == RunningModes.INTERACTIVE)
+                    if(SandboxerGlobals.RunningMode == RunningModes.INTERACTIVE)
                     {
                         try
                         {
                             // append to the console box in windows forms
-                            SandboxerGlobalSetting.SandboxerUIInstance.errorMessage = custom_message;
+                            SandboxerGlobals.SandboxerUIInstance.errorMessage.Add("Exception_message: " + exception_message + "\n");
+                            SandboxerGlobals.SandboxerUIInstance.RefreshConsoleLog();
                         }
-                        catch (System.Exception)
+                        catch (Exception)
                         {                        
                             // do nothing
                         }
                     }
-                }
-                else
-                {
-                    Console.WriteLine("Exception_message: " + exception_message + "\n");
-                }
+                    else
+                    {
+                        Console.WriteLine("Exception_message: " + exception_message + "\n");
+                    }
+                }                
             }
-            else if (SandboxerGlobalSetting.LogMode == LogModes.FILE)
+            else if (SandboxerGlobals.LogMode == LogModes.FILE)
             {
                 using (StreamWriter writer = new StreamWriter(errorLogFilePath, true))
                 {
                     writer.WriteLine(custom_message + "\n");
 
-                    if(SandboxerGlobalSetting.DebugMode == true)
+                    if(SandboxerGlobals.DebugMode == true)
                     {
                         writer.WriteLine("Exception_message: " + exception_message);
                     }

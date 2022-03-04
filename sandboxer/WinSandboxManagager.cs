@@ -19,12 +19,12 @@ namespace sandboxer.winsand
             Version os_version = os.Version;
             if ((os.Platform == PlatformID.Win32NT) && os_version.Major >= 10)
             {
-                SandboxerGlobalSetting.RedirectMessageDisplay("Windows 10 or higher detected.");
+                SandboxerGlobals.RedirectMessageDisplay("Windows 10 or higher detected.");
                 return true;
             }
             else
             {
-                SandboxerGlobalSetting.RedirectMessageDisplay("Windows 10 or higher is required to run in Windows Sandbox Mode.");
+                SandboxerGlobals.RedirectMessageDisplay("Windows 10 or higher is required to run in Windows Sandbox Mode.");
                 return false;
             }
         }
@@ -33,7 +33,7 @@ namespace sandboxer.winsand
         {
             try
             {
-                SandboxerGlobalSetting.RedirectMessageDisplay("Please hold-on let's check if Windows Sandbox feature is enabled on this system...");
+                SandboxerGlobals.RedirectMessageDisplay("Please hold-on let's check if Windows Sandbox feature is enabled on this system...");
                 PowerShell ps = PowerShell.Create();
                 ps.AddScript("(Get-WindowsOptionalFeature -Online -FeatureName \"Containers-DisposableClientVM\").state");
                 Collection<PSObject> psOutput = ps.Invoke();
@@ -41,18 +41,18 @@ namespace sandboxer.winsand
                 {
                     if (psOutput[0].ToString() == "Enabled")
                     {
-                        SandboxerGlobalSetting.RedirectMessageDisplay("Windows Sandbox feature is enabled on this system.");
+                        SandboxerGlobals.RedirectMessageDisplay("Windows Sandbox feature is enabled on this system.");
                         return true;
                     }
                     else
                     {
-                        SandboxerGlobalSetting.RedirectMessageDisplay("Windows Sandbox feature is not enabled on this system.");
+                        SandboxerGlobals.RedirectMessageDisplay("Windows Sandbox feature is not enabled on this system.");
                         return false;
                     }
                 }
                 else
                 {
-                    SandboxerGlobalSetting.RedirectMessageDisplay("Windows Sandbox feature is not enabled on this system.");
+                    SandboxerGlobals.RedirectMessageDisplay("Windows Sandbox feature is not enabled on this system.");
                     return false;
                 }
             }
@@ -67,7 +67,7 @@ namespace sandboxer.winsand
         {
             try 
             {
-                SandboxerGlobalSetting.RedirectMessageDisplay("Installing Windows Sandbox...");
+                SandboxerGlobals.RedirectMessageDisplay("Installing Windows Sandbox...");
 
                 // we need to enable Windows sandbox feature in windows if 
                 // we must run Windows Sandbox in windows 10
@@ -81,6 +81,7 @@ namespace sandboxer.winsand
             catch (RuntimeException e)
             {
                 RuntimeException.Debug("Error: " + error_message + "\n", e.Message);
+                return;
             }        
         }
 
@@ -97,7 +98,7 @@ namespace sandboxer.winsand
         {
             try
             {
-                SandboxerGlobalSetting.RedirectMessageDisplay("Starting Windows Sandbox...");
+                SandboxerGlobals.RedirectMessageDisplay("Starting Windows Sandbox...");
 
                 string windir = Environment.GetEnvironmentVariable("windir");
 
@@ -105,9 +106,9 @@ namespace sandboxer.winsand
                 PermissionManager.CreateConfigurationFile();
 
                 // check if user defined config file exists or we use default one
-                string config_filename = DoesFileExist(SandboxerGlobalSetting.WorkingDirectory + @"\user_defined_sanbox_config.wsb") ?
-                    SandboxerGlobalSetting.WorkingDirectory + @"\user_defined_sanbox_config.wsb" :
-                    SandboxerGlobalSetting.WorkingDirectory + @"\windows_sanbox_config.wsb";
+                string config_filename = DoesFileExist(SandboxerGlobals.WorkingDirectory + @"\user_defined_sanbox_config.wsb") ?
+                    SandboxerGlobals.WorkingDirectory + @"\user_defined_sanbox_config.wsb" :
+                    SandboxerGlobals.WorkingDirectory + @"\windows_sanbox_config.wsb";
 
                 // Now that we've confirmed Windows sandbox is enabled, we can run it with the new configuration
                 Process process = Process.Start(windir + @"\Sysnative\WindowsSandbox.exe", config_filename);
@@ -116,6 +117,7 @@ namespace sandboxer.winsand
             catch (RuntimeException e)
             {
                 RuntimeException.Debug(e.Message);
+                return;
             }
         }
     }

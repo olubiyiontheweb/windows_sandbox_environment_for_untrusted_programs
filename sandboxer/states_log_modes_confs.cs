@@ -32,5 +32,6 @@ namespace sandboxer.Definitions
        CONSOLE,
        POWERSHELLVM,
        INTERACTIVE,
+       NONE
     }
 }

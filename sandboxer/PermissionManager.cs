@@ -27,11 +27,16 @@ namespace sandboxer.permissions
             try
             {
                 // add all supported permissions to the permission set
-                if (SandboxerGlobalSetting.PermissionSelections.Execution)
+                if (SandboxerGlobals.PermissionSelections.Execution == true)
                     permission_set.AddPermission(new SecurityPermission(SecurityPermissionFlag.Execution));
+                    SandboxerGlobals.RedirectMessageDisplay("Added Execution permission");
+                    SandboxerGlobals.RedirectMessageDisplay(SandboxerGlobals.PermissionSelections.Execution.ToString());
 
-                if (SandboxerGlobalSetting.PermissionSelections.FileSystemAcess)
-                    permission_set.AddPermission(new FileIOPermission(FileIOPermissionAccess.AllAccess, SandboxerGlobalSetting.WorkingDirectory));
+                if (SandboxerGlobals.PermissionSelections.FileSystemAcess == true)
+                    permission_set.AddPermission(new FileIOPermission(FileIOPermissionAccess.AllAccess, SandboxerGlobals.WorkingDirectory));
+                    SandboxerGlobals.RedirectMessageDisplay("Added FileIOPermission permission");
+                    SandboxerGlobals.RedirectMessageDisplay(SandboxerGlobals.PermissionSelections.FileSystemAcess.ToString());
+
 
                 // adding some required permissions to the sandbox
                 permission_set.AddPermission (new UIPermission (PermissionState.Unrestricted));
@@ -40,6 +45,7 @@ namespace sandboxer.permissions
             catch (Exception e)
             {                
                 RuntimeException.Debug("Error: Sandbox could not set permissions for the program", e.Message);
+                return null;
             }
 
             try
@@ -47,7 +53,7 @@ namespace sandboxer.permissions
                 // cast list of strings (custom permissions) provided by users to list of permissions using reflection
                 List<IPermission> custom_permissions = new List<IPermission>();
 
-                foreach (string permission in SandboxerGlobalSetting.CustomPermissions)
+                foreach (string permission in SandboxerGlobals.CustomPermissions)
                 {
                     IPermission instance = (IPermission)Activator.CreateInstance(Type.GetType(permission));
                     custom_permissions.Add(instance);
@@ -73,28 +79,28 @@ namespace sandboxer.permissions
         /// </summary>
         public static void CreateConfigurationFile()
         {
-            string working_directory = SandboxerGlobalSetting.WorkingDirectory;
+            string working_directory = SandboxerGlobals.WorkingDirectory;
             // create a new file
             using (StreamWriter file = new StreamWriter("user_defined_sanbox_config" + ".wsb"))
             {
                 // write xml content to the file
                 file.WriteLine("<Configuration>");
-                file.WriteLine("  <Networking>" + (SandboxerGlobalSetting.PermissionSelections.Networking ? "Enable" : "Disable") + "</Networking>");
+                file.WriteLine("  <Networking>" + ((SandboxerGlobals.PermissionSelections.Networking == true) ? "Enable" : "Disable") + "</Networking>");
                 file.WriteLine("  <MappedFolders>");
                 file.WriteLine("    <MappedFolder>");
-                file.WriteLine("      <HostFolder>" + SandboxerGlobalSetting.WorkingDirectory +"</HostFolder>");
+                file.WriteLine("      <HostFolder>" + SandboxerGlobals.WorkingDirectory +"</HostFolder>");
                 file.WriteLine("      <SandboxFolder>" + @"c:\MountedFolder\" +"</SandboxFolder>");
-                file.WriteLine("      <ReadOnly>" + (SandboxerGlobalSetting.PermissionSelections.FileSystemAcess ? "True" : "False") + "</ReadOnly>");
+                file.WriteLine("      <ReadOnly>" + (SandboxerGlobals.PermissionSelections.FileSystemAcess ? "True" : "False") + "</ReadOnly>");
                 file.WriteLine("    </MappedFolder>");
                 file.WriteLine("  </MappedFolders>");
                 file.WriteLine("  <LogonCommand>");
-                file.WriteLine("    <Command>" + @"c:\MountedFolder\" + SandboxerGlobalSetting.ProgramToRun + " " + string.Join(" ", SandboxerGlobalSetting.ArgumentsForProgram) + "</Command>");
+                file.WriteLine("    <Command>" + @"c:\MountedFolder\" + SandboxerGlobals.ProgramToRun + " " + string.Join(" ", SandboxerGlobals.ArgumentsForProgram) + "</Command>");
                 file.WriteLine("  </LogonCommand>");
 
                 // writing custom permissions to file
-                if (SandboxerGlobalSetting.CustomPermissions.Count > 0)
+                if (SandboxerGlobals.CustomPermissions.Count > 0)
                 {
-                    foreach (string permission in SandboxerGlobalSetting.CustomPermissions)
+                    foreach (string permission in SandboxerGlobals.CustomPermissions)
                     {
                         file.WriteLine(permission);
                     }
