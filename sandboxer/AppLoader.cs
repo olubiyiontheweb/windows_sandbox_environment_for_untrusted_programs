@@ -66,6 +66,7 @@ namespace sandboxer.AppLoader
         public void InitalizeEnvironment()
         {
             string program_path = Path.Combine(SandboxerGlobals.WorkingDirectory, SandboxerGlobals.ProgramToRun);
+            string[] program_args = SandboxerGlobals.ArgumentsForProgram;
 
             string message = "Running program " + program_path + " ....";
             SandboxerGlobals.RedirectMessageDisplay(message);
@@ -104,25 +105,24 @@ namespace sandboxer.AppLoader
                 return;
             }
 
-            if (IsFileAnAssembly(program_path))
-            {
-                SandboxerGlobals.RedirectMessageDisplay("Loading assembly: " + SandboxerGlobals.ProgramToRun);
-                try
-                {
-                    // load and execute the assembly file into the application domain
-                    sandbox_domain.ExecuteAssembly(program_path, SandboxerGlobals.ArgumentsForProgram);
-                    AppDomain.Unload(sandbox_domain);
-                }
-                catch (Exception e)
-                {
-                    string error_message = "Security Error: file " + SandboxerGlobals.ProgramToRun + " could not be executed";
-                    RuntimeException.Debug(error_message, e.Message);
-                    return;
-                }
-            }
-            else
+            /* if(!IsFileAnAssembly(program_path))
             {
                 RuntimeException.Debug("Error: " + SandboxerGlobals.ProgramToRun + " is not a valid assembly file");
+                return;
+            } */
+
+            SandboxerGlobals.RedirectMessageDisplay("Loading assembly: " + SandboxerGlobals.ProgramToRun);
+            
+            try
+            {
+                // load and execute the assembly file into the application domain
+                sandbox_domain.ExecuteAssembly(program_path, program_args);
+                AppDomain.Unload(sandbox_domain);
+            }
+            catch (Exception e)
+            {
+                string error_message = "Security Error: file " + SandboxerGlobals.ProgramToRun + " could not be executed";
+                RuntimeException.Debug(error_message, e.Message);
                 return;
             }
         }

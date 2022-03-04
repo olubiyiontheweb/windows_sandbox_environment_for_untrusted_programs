@@ -113,6 +113,31 @@ namespace interactiveSandboxer
 
         private void SandboxerUI_Load(object sender, EventArgs e)
         {
+            // Initializing default settings for the Sanboxer UI
+
+            this.workingdirectory.Text = Variables.working_directory;
+            this.programname.Text = Variables.program_name;
+
+            // join string array to a single string with comma separator
+            this.arguments.Text = string.Join(",", Variables.arguments);
+
+            this.custompermissions.Text = string.Join(",", Variables.custom_permissions);
+            
+            if(Variables.available_permissions.Execution == true)
+            {
+                this.checkedpermissions.SetItemChecked(0, true);
+            }
+
+            if (Variables.available_permissions.FileSystemAcess == true)
+            {
+                this.checkedpermissions.SetItemChecked(1, true);
+            }
+
+            if (Variables.available_permissions.Networking == true)
+            {
+                this.checkedpermissions.SetItemChecked(2, true);
+            }
+
             // add error messages to the listbox
             for (int i = 0; i < Variables.error_message.Count; i++)
             {

@@ -125,6 +125,9 @@ namespace sandboxer
                         SandboxerGlobals.SandboxerUIInstance = (ISandboxerUI)Activator.CreateInstance(type);
                     }
                 }
+
+                // initialize the UI with global variables
+                ExecuteFromUI.InitializeUIFields();
             }
             catch (Exception e)
             {

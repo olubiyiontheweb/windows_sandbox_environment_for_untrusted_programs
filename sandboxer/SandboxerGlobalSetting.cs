@@ -97,6 +97,18 @@ namespace sandboxer
                 return;
             }
         }
+
+        /// <summary>
+        /// pass global variables to the UI instance
+        /// </summary>
+        public static void InitializeUIFields()
+        {
+            SandboxerGlobals.SandboxerUIInstance.workingDirectory = SandboxerGlobals.WorkingDirectory;
+            SandboxerGlobals.SandboxerUIInstance.programName = SandboxerGlobals.ProgramToRun;
+            SandboxerGlobals.SandboxerUIInstance.Arguments = SandboxerGlobals.ArgumentsForProgram;
+            SandboxerGlobals.SandboxerUIInstance.availablePermissions = SandboxerGlobals.PermissionSelections;
+            SandboxerGlobals.SandboxerUIInstance.customPermissions = SandboxerGlobals.CustomPermissions;
+        }
     }
 
     static class SandboxerGlobals

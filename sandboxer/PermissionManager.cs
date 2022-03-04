@@ -40,8 +40,10 @@ namespace sandboxer.permissions
                 }
 
                 // adding some required permissions to the sandbox
-                permission_set.AddPermission (new UIPermission (PermissionState.Unrestricted));
-                permission_set.AddPermission (new ReflectionPermission (ReflectionPermissionFlag.MemberAccess));
+                permission_set.AddPermission(new UIPermission (PermissionState.Unrestricted));
+
+                (new ReflectionPermission(ReflectionPermissionFlag.MemberAccess)).Assert();
+                permission_set.AddPermission(new ReflectionPermission (ReflectionPermissionFlag.MemberAccess));
             }
             catch (Exception e)
             {                
@@ -52,19 +54,39 @@ namespace sandboxer.permissions
             try
             {                
                 // cast list of strings (custom permissions) provided by users to list of permissions using reflection
-                List<IPermission> custom_permissions = new List<IPermission>();
-
-                foreach (string permission in SandboxerGlobals.CustomPermissions)
+                if (SandboxerGlobals.CustomPermissions.Count > 0)
                 {
-                    IPermission instance = (IPermission)Activator.CreateInstance(Type.GetType(permission));
-                    custom_permissions.Add(instance);
-                }                
+                    List<IPermission> custom_permissions = new List<IPermission>();
 
-                foreach (IPermission permission in custom_permissions)
-                {
-                    permission_set.AddPermission(permission);
-                    permission_set.Demand();
-                }
+                    // get types of system.security.ipermissions
+                    Type[] permission_types = typeof(IPermission).Assembly.GetTypes();
+
+                    // iterate through the list of custom permissions provided by the user
+                    foreach (string custom_permission in SandboxerGlobals.CustomPermissions)
+                    {
+                        // iterate through the list of system.security.ipermissions
+                        foreach (Type permission_type in permission_types)
+                        {
+                            // if the custom permission matches the name of a system.security.ipermission
+                            if (permission_type.Name == custom_permission)
+                            {
+                                // create an instance of the custom permission
+                                IPermission custom_permission_instance = (IPermission)Activator.CreateInstance(permission_type);
+
+                                // add the custom permission to the list of custom permissions
+                                custom_permissions.Add(custom_permission_instance);
+                            }
+                        }
+                    }                  
+                    
+                    foreach (IPermission permission in custom_permissions)
+                    {
+                        permission_set.AddPermission(permission);
+                        permission_set.Demand();
+                    }
+
+                    SandboxerGlobals.RedirectMessageDisplay("Added custom permissions");
+                }                        
             }
             catch (Exception e)
             {                

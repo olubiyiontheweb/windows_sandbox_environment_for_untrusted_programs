@@ -35,7 +35,7 @@ namespace sandboxer
                 case "program":
                     SandboxerGlobals.RedirectMessageDisplay("\nPlease enter the file name of the program you want to run in the sandbox (remember to place the file in the current/working directory): ");
                     string program = Console.ReadLine();
-                    if (File.Exists(program))
+                    if (File.Exists(Path.Combine(SandboxerGlobals.WorkingDirectory, program)))
                     {
                         SandboxerGlobals.ProgramToRun = program;
                     }
@@ -120,9 +120,9 @@ namespace sandboxer
                     SandboxerGlobals.RunningMode = (RunningModes)Enum.Parse(typeof(RunningModes), Console.ReadLine(), true);
                     break;                        
                 default:
+                    AskUserInteractively("workingdir");
                     AskUserInteractively("program");
                     AskUserInteractively("arguments");
-                    AskUserInteractively("workingdir");
                     AskUserInteractively("permissionselections");
                     AskUserInteractively("custompermissions");
                     AskUserInteractively("mode");                    
