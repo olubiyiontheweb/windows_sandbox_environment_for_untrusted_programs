@@ -77,7 +77,7 @@ namespace sandboxer
                         SandboxerGlobals.RedirectMessageDisplay(message);
                         
                         // hide the console window
-                        // ConsoleExtension.Hide();
+                        ConsoleExtension.Hide();
 
                         // show the UI
                         SandboxerGlobals.SandboxerUIInstance.ShowUI();
