@@ -9,5 +9,5 @@ A tool for creating a windows sandbox environment for excuting untrusted program
 
 ## Copyright
 Sandboxer Copyright (c) 2022, [Oluwatosin Olubiyi](
-    See the [LICENSE](LICENSE.md) file for the full license.
+    See the [LICENSE](LICENSE) file for the full license.
 )
