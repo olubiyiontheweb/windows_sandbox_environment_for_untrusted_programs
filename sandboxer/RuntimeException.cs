@@ -31,7 +31,7 @@ namespace sandboxer
         {   
             if (SandboxerGlobals.LogMode == LogModes.CONSOLE)
             {
-                if(SandboxerGlobals.RunningMode == RunningModes.INTERACTIVE)
+                if(SandboxerGlobals.RunningMode == RunningModes.INTERACTIVE && SandboxerGlobals.SandboxerUIInstance != null)
                 {
                     try
                     {

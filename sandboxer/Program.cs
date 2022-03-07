@@ -2,9 +2,6 @@
 using System.Linq;
 using System.Reflection;
 
-// third party library for parsing command line arguments
-using CommandLine; // https://github.com/commandlineparser/commandline
-
 using sandboxer.AppLoader;
 using sandboxer.Definitions;
 using sandboxer.interactive;
@@ -21,27 +18,24 @@ namespace sandboxer
 
             SandboxerGlobals.RedirectMessageDisplay("\nNow running sandboxer for the first time ...\n");
 
-            CommandLine.Parser.Default.ParseArguments<OptionsManager>(args)
-                .WithParsed<OptionsManager>(opts =>
-                {                    
-                    if (opts.PassArguments)
-                    {
-                        SandboxerGlobals.RunningMode = RunningModes.CONSOLE;
-                        AskUserInteractively("all");
-                    }
-                })
-                .WithNotParsed<OptionsManager>((errs) =>
+            if(args.Length > 0)
+            {
+                // if the user provided some arguments, let's try to load the program
+                if(args.Contains("-i"))
                 {
-                    if (args.Contains("--help") || args.Contains("-h") || args.Contains("-v") || args.Contains("--version"))
-                    {
-                        return;
-                    }
-                    else
-                    {
-                        RuntimeException.Debug("Unrecognized arguments provided: " + string.Join(", ", errs));
-                        return;
-                    }
-                });
+                    // if the user provided the -i argument, let's run the interactive sandboxer
+                    SandboxerGlobals.RunningMode = RunningModes.CONSOLE;
+                    AskUserInteractively("all");
+                    SandboxerGlobals.RedirectMessageDisplay("\nRunning interactive sandboxer ...\n");
+                }
+
+                // show version number
+                if(args.Contains("-v"))
+                {
+                    SandboxerGlobals.RunningMode = RunningModes.CONSOLE;
+                    SandboxerGlobals.RedirectMessageDisplay("\nSandboxer version: " + "1.0.0.0" + "\n");
+                }
+            }
 
             // We know everything is ok here (the program is running fine), 
             // so let's check if any program has been loaded
@@ -74,13 +68,24 @@ namespace sandboxer
                     {
 
                         string message = "\nRunning sandboxer in " + SandboxerGlobals.RunningMode + " mode";
-                        SandboxerGlobals.RedirectMessageDisplay(message);
-                        
-                        // hide the console window
-                        ConsoleExtension.Hide();
 
-                        // show the UI
-                        SandboxerGlobals.SandboxerUIInstance.ShowUI();
+                        if (SandboxerGlobals.SandboxerUIInstance == null)
+                        {
+                            Console.WriteLine("Couldn't find the interactiveSandboxer.dll file");
+                            Console.WriteLine("Press any key to exit");
+                            Console.ReadLine();
+                            throw new RuntimeException("Couldn't find the interactiveSandboxer.dll file");
+                        }
+                        else
+                        {
+                            SandboxerGlobals.RedirectMessageDisplay(message);
+
+                            // hide the console window
+                            ConsoleExtension.Hide();
+
+                            // show the UI                        
+                            SandboxerGlobals.SandboxerUIInstance.ShowUI();
+                        }                        
                     }
                 }
                 catch (Exception e)

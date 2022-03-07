@@ -122,6 +122,8 @@ namespace interactiveSandboxer
             this.arguments.Text = string.Join(",", Variables.arguments);
 
             this.custompermissions.Text = string.Join(",", Variables.custom_permissions);
+
+            this.networkaddress.Text = Variables.network_address;
             
             if(Variables.available_permissions.Execution == true)
             {
@@ -191,6 +193,11 @@ namespace interactiveSandboxer
         private void consolelog_SelectedIndexChanged(object sender, EventArgs e)
         {
 
+        }
+
+        private void networkaddress_TextChanged(object sender, EventArgs e)
+        {
+            Variables.network_address = networkaddress.Text;
         }
     }
 }

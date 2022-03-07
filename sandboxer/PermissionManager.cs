@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Net;
 using System.Security;
 using System.Collections.Generic;
 using System.Security.Permissions;
@@ -39,11 +40,37 @@ namespace sandboxer.permissions
                     SandboxerGlobals.RedirectMessageDisplay("Added FileIOPermission permission");
                 }
 
-                // adding some required permissions to the sandbox
-                permission_set.AddPermission(new UIPermission (PermissionState.Unrestricted));
+                if (SandboxerGlobals.PermissionSelections.Networking == true)
+                {
+                    if(string.IsNullOrWhiteSpace(SandboxerGlobals.NetworkAddress))
+                    {
+                        RuntimeException.Debug("You need to provide a network address to give the sandbox access to the network");
+                        return null;
+                    }
+                    
+                    permission_set.AddPermission(new SocketPermission(
+                        NetworkAccess.Connect,
+                        TransportType.All,
+                        SandboxerGlobals.NetworkAddress,
+                        SocketPermission.AllPorts));
+                    SandboxerGlobals.RedirectMessageDisplay("Added Networking permission");
+                }
 
-                (new ReflectionPermission(ReflectionPermissionFlag.MemberAccess)).Assert();
-                permission_set.AddPermission(new ReflectionPermission (ReflectionPermissionFlag.MemberAccess));
+                // adding some required permissions to the sandbox
+                if(SandboxerGlobals.PermissionSelections.Reflection == true)
+                {
+                    permission_set.AddPermission(new ReflectionPermission(ReflectionPermissionFlag.MemberAccess));
+                    SandboxerGlobals.RedirectMessageDisplay("Added Reflection permission");
+                }
+
+                if (SandboxerGlobals.PermissionSelections.UserInterface == true)
+                {
+                    permission_set.AddPermission(new UIPermission(PermissionState.Unrestricted));
+                    SandboxerGlobals.RedirectMessageDisplay("Added UserInterface permission");
+                }
+
+                // let's make sure we have all the permissions we need
+                permission_set.Demand();
             }
             catch (Exception e)
             {                

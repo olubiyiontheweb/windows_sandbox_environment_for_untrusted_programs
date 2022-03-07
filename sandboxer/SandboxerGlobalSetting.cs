@@ -21,6 +21,8 @@ namespace sandboxer
         public bool Networking { get; set; }
         public bool FileSystemAcess { get; set; }
         public bool Execution { get; set; }
+        public bool UserInterface { get; set; }
+        public bool Reflection { get; set; }
     }
 
     public static class ExecuteFromUI
@@ -64,6 +66,8 @@ namespace sandboxer
             }
 
             SandboxerGlobals.ArgumentsForProgram = SandboxerGlobals.SandboxerUIInstance.Arguments;
+
+            SandboxerGlobals.NetworkAddress = SandboxerGlobals.SandboxerUIInstance.networkAddress;
 
             SandboxerGlobals.SandboxerUIInstance.GetCurrentPermissions();
 
@@ -124,11 +128,16 @@ namespace sandboxer
         private static string program_to_run = string.Empty;
         private static string[] arguments_for_program = new string[0];
         private static string working_directory = AppDomain.CurrentDomain.BaseDirectory;
+
+        private static string network_address = "";
+
         private static PermissionDict permission_selections = new PermissionDict()
         {
             Networking = false,
             FileSystemAcess = false,
             Execution = false,
+            UserInterface = false,
+            Reflection = false
         };
         private static List<string> custom_permissions = new List<string>();
 
@@ -193,12 +202,18 @@ namespace sandboxer
             set { sandboxer_ui_instance = value; }
         }
 
+        public static string NetworkAddress
+        {
+            get { return network_address; }
+            set { network_address = value; }
+        }
+
         #endregion
 
         public static void RedirectMessageDisplay(string custom_message)
         {
             // append to the console box in windows forms
-            if(running_mode == RunningModes.INTERACTIVE)
+            if(running_mode == RunningModes.INTERACTIVE && SandboxerGlobals.SandboxerUIInstance != null)
             {
                 try
                 {

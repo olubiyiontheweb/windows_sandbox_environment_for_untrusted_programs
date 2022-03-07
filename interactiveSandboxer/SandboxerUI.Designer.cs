@@ -47,18 +47,23 @@ namespace interactiveSandboxer
             this.custompermissions = new System.Windows.Forms.TextBox();
             this.label9 = new System.Windows.Forms.Label();
             this.consolelog = new System.Windows.Forms.ListBox();
+            this.label10 = new System.Windows.Forms.Label();
+            this.networkaddress = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // checkedpermissions
             // 
+            this.checkedpermissions.CheckOnClick = true;
             this.checkedpermissions.FormattingEnabled = true;
             this.checkedpermissions.Items.AddRange(new object[] {
             "Execution Permission",
-            "Directory Access",
-            "Network Access"});
-            this.checkedpermissions.Location = new System.Drawing.Point(56, 90);
+            "FileSystem Access",
+            "Network Access",
+            "User Interface(UI) Permission",
+            "Reflection Permission"});
+            this.checkedpermissions.Location = new System.Drawing.Point(56, 84);
             this.checkedpermissions.Name = "checkedpermissions";
-            this.checkedpermissions.Size = new System.Drawing.Size(268, 49);
+            this.checkedpermissions.Size = new System.Drawing.Size(268, 79);
             this.checkedpermissions.TabIndex = 1;
             this.checkedpermissions.SelectedIndexChanged += new System.EventHandler(this.checkedListBox1_SelectedIndexChanged);
             // 
@@ -66,7 +71,7 @@ namespace interactiveSandboxer
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(53, 27);
+            this.label1.Location = new System.Drawing.Point(53, 23);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(166, 17);
             this.label1.TabIndex = 2;
@@ -76,7 +81,7 @@ namespace interactiveSandboxer
             // label2
             // 
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(113, 53);
+            this.label2.Location = new System.Drawing.Point(113, 50);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(211, 34);
             this.label2.TabIndex = 3;
@@ -87,7 +92,7 @@ namespace interactiveSandboxer
             // 
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.Location = new System.Drawing.Point(53, 258);
+            this.label3.Location = new System.Drawing.Point(53, 276);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(106, 17);
             this.label3.TabIndex = 5;
@@ -95,7 +100,7 @@ namespace interactiveSandboxer
             // 
             // programname
             // 
-            this.programname.Location = new System.Drawing.Point(494, 27);
+            this.programname.Location = new System.Drawing.Point(494, 23);
             this.programname.Name = "programname";
             this.programname.Size = new System.Drawing.Size(240, 20);
             this.programname.TabIndex = 6;
@@ -105,7 +110,7 @@ namespace interactiveSandboxer
             // 
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.Location = new System.Drawing.Point(393, 27);
+            this.label4.Location = new System.Drawing.Point(393, 24);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(78, 17);
             this.label4.TabIndex = 7;
@@ -115,7 +120,7 @@ namespace interactiveSandboxer
             // 
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label5.Location = new System.Drawing.Point(393, 69);
+            this.label5.Location = new System.Drawing.Point(393, 63);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(85, 17);
             this.label5.TabIndex = 9;
@@ -123,7 +128,7 @@ namespace interactiveSandboxer
             // 
             // arguments
             // 
-            this.arguments.Location = new System.Drawing.Point(494, 69);
+            this.arguments.Location = new System.Drawing.Point(494, 63);
             this.arguments.Name = "arguments";
             this.arguments.Size = new System.Drawing.Size(240, 20);
             this.arguments.TabIndex = 8;
@@ -133,7 +138,7 @@ namespace interactiveSandboxer
             // 
             this.label6.AutoSize = true;
             this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label6.Location = new System.Drawing.Point(393, 112);
+            this.label6.Location = new System.Drawing.Point(393, 103);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(111, 17);
             this.label6.TabIndex = 11;
@@ -142,7 +147,7 @@ namespace interactiveSandboxer
             // 
             // workingdirectory
             // 
-            this.workingdirectory.Location = new System.Drawing.Point(396, 185);
+            this.workingdirectory.Location = new System.Drawing.Point(396, 159);
             this.workingdirectory.Name = "workingdirectory";
             this.workingdirectory.Size = new System.Drawing.Size(338, 20);
             this.workingdirectory.TabIndex = 10;
@@ -152,7 +157,7 @@ namespace interactiveSandboxer
             // 
             this.label7.AutoSize = true;
             this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label7.Location = new System.Drawing.Point(393, 151);
+            this.label7.Location = new System.Drawing.Point(393, 134);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(138, 17);
             this.label7.TabIndex = 13;
@@ -162,7 +167,7 @@ namespace interactiveSandboxer
             // 
             this.windowssandbox.AutoSize = true;
             this.windowssandbox.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.windowssandbox.Location = new System.Drawing.Point(510, 111);
+            this.windowssandbox.Location = new System.Drawing.Point(510, 102);
             this.windowssandbox.Name = "windowssandbox";
             this.windowssandbox.Size = new System.Drawing.Size(142, 21);
             this.windowssandbox.TabIndex = 14;
@@ -174,7 +179,7 @@ namespace interactiveSandboxer
             // 
             this.dotnet.AutoSize = true;
             this.dotnet.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.dotnet.Location = new System.Drawing.Point(665, 112);
+            this.dotnet.Location = new System.Drawing.Point(665, 103);
             this.dotnet.Name = "dotnet";
             this.dotnet.Size = new System.Drawing.Size(69, 21);
             this.dotnet.TabIndex = 15;
@@ -186,7 +191,7 @@ namespace interactiveSandboxer
             // 
             this.startbutton.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
             this.startbutton.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.startbutton.Location = new System.Drawing.Point(659, 222);
+            this.startbutton.Location = new System.Drawing.Point(659, 253);
             this.startbutton.Name = "startbutton";
             this.startbutton.Size = new System.Drawing.Size(75, 32);
             this.startbutton.TabIndex = 16;
@@ -198,7 +203,7 @@ namespace interactiveSandboxer
             // 
             this.label8.AutoSize = true;
             this.label8.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label8.Location = new System.Drawing.Point(53, 151);
+            this.label8.Location = new System.Drawing.Point(53, 172);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(153, 17);
             this.label8.TabIndex = 18;
@@ -207,7 +212,7 @@ namespace interactiveSandboxer
             // 
             // custompermissions
             // 
-            this.custompermissions.Location = new System.Drawing.Point(56, 208);
+            this.custompermissions.Location = new System.Drawing.Point(56, 229);
             this.custompermissions.Multiline = true;
             this.custompermissions.Name = "custompermissions";
             this.custompermissions.Size = new System.Drawing.Size(268, 38);
@@ -217,7 +222,7 @@ namespace interactiveSandboxer
             // label9
             // 
             this.label9.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label9.Location = new System.Drawing.Point(91, 171);
+            this.label9.Location = new System.Drawing.Point(91, 192);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(233, 34);
             this.label9.TabIndex = 19;
@@ -230,17 +235,37 @@ namespace interactiveSandboxer
             // 
             this.consolelog.FormattingEnabled = true;
             this.consolelog.HorizontalScrollbar = true;
-            this.consolelog.Location = new System.Drawing.Point(56, 286);
+            this.consolelog.Location = new System.Drawing.Point(56, 304);
             this.consolelog.Name = "consolelog";
             this.consolelog.Size = new System.Drawing.Size(678, 134);
             this.consolelog.TabIndex = 20;
             this.consolelog.SelectedIndexChanged += new System.EventHandler(this.consolelog_SelectedIndexChanged);
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label10.Location = new System.Drawing.Point(393, 192);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(130, 17);
+            this.label10.TabIndex = 22;
+            this.label10.Text = "Network Address";
+            // 
+            // networkaddress
+            // 
+            this.networkaddress.Location = new System.Drawing.Point(396, 217);
+            this.networkaddress.Name = "networkaddress";
+            this.networkaddress.Size = new System.Drawing.Size(338, 20);
+            this.networkaddress.TabIndex = 21;
+            this.networkaddress.TextChanged += new System.EventHandler(this.networkaddress_TextChanged);
             // 
             // SandboxerUI
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.label10);
+            this.Controls.Add(this.networkaddress);
             this.Controls.Add(this.consolelog);
             this.Controls.Add(this.label9);
             this.Controls.Add(this.label8);
@@ -287,6 +312,8 @@ namespace interactiveSandboxer
         private System.Windows.Forms.TextBox custompermissions;
         private System.Windows.Forms.Label label9;
         public System.Windows.Forms.ListBox consolelog;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.TextBox networkaddress;
     }
 }
 

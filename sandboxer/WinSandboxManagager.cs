@@ -3,15 +3,13 @@ using System.IO;
 using System.Diagnostics;
 using System.Management.Automation;
 using System.Collections.ObjectModel;
-
-using sandboxer;
 using sandboxer.permissions;
 
 namespace sandboxer.winsand
 {
     public static class WinSandboxManagager
     {
-        static string error_message = "You need to run this program as administrator to install Windows Sandbox feature.";
+        static readonly string error_message = "You need to run this program as administrator to install Windows Sandbox feature.";
 
         public static bool CheckWindowsValidity()
         {

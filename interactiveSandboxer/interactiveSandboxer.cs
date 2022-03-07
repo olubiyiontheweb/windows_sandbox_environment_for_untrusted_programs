@@ -15,7 +15,7 @@ namespace interactiveSandboxer
 {
     public static class Variables
     {        
-        #region private variables
+        #region public variables
 
         // set sandbox mode to none
         public static RunningModes sandbox_mode = RunningModes.NONE;
@@ -27,10 +27,14 @@ namespace interactiveSandboxer
             Networking = false,
             FileSystemAcess = false,
             Execution = false,
+            UserInterface = false,
+            Reflection = false
         };
         
         public static List<string> custom_permissions = new List<string>();
         public static string working_directory = Environment.CurrentDirectory;
+
+        public static string network_address = string.Empty;
 
         public static SandboxerUI sandboxer_ui = null;
 
@@ -97,6 +101,12 @@ namespace interactiveSandboxer
             set { Variables.custom_permissions = value; }
         }
 
+        public string networkAddress
+        {
+            get { return Variables.network_address; }
+            set { Variables.network_address = value; }
+        }
+
         #endregion
 
         #region public methods
@@ -116,7 +126,7 @@ namespace interactiveSandboxer
             {  
                 if (Variables.sandboxer_ui.checkedpermissions.GetItemChecked(i))  
                 {
-                    if(Variables.sandboxer_ui.checkedpermissions.Items[i].ToString() == "Directory Access")
+                    if(Variables.sandboxer_ui.checkedpermissions.Items[i].ToString() == "FileSystem Access")
                     {
                         Variables.available_permissions.FileSystemAcess = true;
                     }
@@ -128,10 +138,18 @@ namespace interactiveSandboxer
                     {
                         Variables.available_permissions.Execution = true;
                     }
+                    else if (Variables.sandboxer_ui.checkedpermissions.Items[i].ToString() == "User Interface(UI) Permission")
+                    {
+                        Variables.available_permissions.UserInterface = true;
+                    }
+                    else if (Variables.sandboxer_ui.checkedpermissions.Items[i].ToString() == "Reflection Permission")
+                    {
+                        Variables.available_permissions.Reflection = true;
+                    }
                 }
                 else
                 {
-                    if (Variables.sandboxer_ui.checkedpermissions.Items[i].ToString() == "Directory Access")
+                    if (Variables.sandboxer_ui.checkedpermissions.Items[i].ToString() == "FileSystem Access")
                     {
                         Variables.available_permissions.FileSystemAcess = false;
                     }
@@ -142,6 +160,14 @@ namespace interactiveSandboxer
                     else if (Variables.sandboxer_ui.checkedpermissions.Items[i].ToString() == "Execution Permission")
                     {
                         Variables.available_permissions.Execution = false;
+                    }
+                    else if (Variables.sandboxer_ui.checkedpermissions.Items[i].ToString() == "User Interface(UI) Permission")
+                    {
+                        Variables.available_permissions.UserInterface = false;
+                    }
+                    else if (Variables.sandboxer_ui.checkedpermissions.Items[i].ToString() == "Reflection")
+                    {
+                        Variables.available_permissions.Reflection = false;
                     }
                 }
             }

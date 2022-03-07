@@ -2,24 +2,12 @@
 using System.IO;
 using System.Linq;
 
-// third party library for parsing command line arguments
-using CommandLine; // https://github.com/commandlineparser/commandline
-
 using sandboxer.Definitions;
 
 namespace sandboxer
 {
     partial class Program
-    {
-        public class OptionsManager
-        {
-            /* [Option('d', "debugmode", Required = false, HelpText = "Display debug information while running program")]
-            public bool DebugMode { get; set; } */
-
-            [Option('i', "pass_arguments", Required = false, HelpText = "Pass arguments to the program")]
-            public bool PassArguments { get; set; }
-        }
-
+    {        
         /// <summary>
         /// ask the user for the program name, arguments and sandbox mode
         /// </summary>
@@ -82,8 +70,16 @@ namespace sandboxer
                         }
                     }
                     break;
+                case "network":
+                    SandboxerGlobals.RedirectMessageDisplay("\nEnter the network address you want to use for the sandbox: ");
+                    string network = Console.ReadLine();
+                    if (network != string.Empty)
+                    {
+                        SandboxerGlobals.NetworkAddress = network;
+                    }
+                    break;
                 case "permissionselections":
-                    SandboxerGlobals.RedirectMessageDisplay("\nEnter the supported permissions you want to grant to the program (N/E/F): ");
+                    SandboxerGlobals.RedirectMessageDisplay("\nEnter the supported permissions you want to grant to the program (N/E/F/U/R): ");
                     string permissions = Console.ReadLine();
                     PermissionDict permissionStruct = new PermissionDict();
                     if (permissions.Contains("N"))
@@ -99,6 +95,16 @@ namespace sandboxer
                     if (permissions.Contains("F"))
                     {
                         permissionStruct.FileSystemAcess = true;
+                    }
+
+                    if (permissions.Contains("U"))
+                    {
+                        permissionStruct.UserInterface = true;
+                    }
+                    
+                    if (permissions.Contains("R"))
+                    {
+                        permissionStruct.Reflection = true;
                     }
 
                     SandboxerGlobals.PermissionSelections = permissionStruct;
@@ -124,6 +130,7 @@ namespace sandboxer
                     AskUserInteractively("program");
                     AskUserInteractively("arguments");
                     AskUserInteractively("permissionselections");
+                    AskUserInteractively("network");
                     AskUserInteractively("custompermissions");
                     AskUserInteractively("mode");                    
                     break;

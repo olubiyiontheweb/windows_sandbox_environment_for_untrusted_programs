@@ -35,6 +35,8 @@ namespace sandboxer.interactive
         /// </summary>
         string workingDirectory { get; set; }
 
+        string networkAddress { get; set; }
+
         /// <summary>
         /// This method will be used to send error messages to the display.
         /// </summary>
