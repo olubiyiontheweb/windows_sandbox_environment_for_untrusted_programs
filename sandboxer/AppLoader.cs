@@ -31,7 +31,7 @@ namespace sandboxer.AppLoader
             string program_path = Path.Combine(SandboxerGlobals.WorkingDirectory, SandboxerGlobals.ProgramToRun);
             string[] program_args = SandboxerGlobals.ArgumentsForProgram;
 
-            string message = "Running program " + program_path + " ....";
+            string message = "Running program " + program_path + "....";
             SandboxerGlobals.RedirectMessageDisplay(message);
 
             AppDomainSetup setup = new AppDomainSetup();
@@ -77,7 +77,6 @@ namespace sandboxer.AppLoader
             {
                 // load and execute the assembly file into the application domain
                 sandbox_domain.ExecuteAssembly(program_path, program_args);
-                AppDomain.Unload(sandbox_domain);
             }
             catch (Exception e)
             {
