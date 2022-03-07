@@ -6,7 +6,7 @@ using sandboxer.Definitions;
 
 namespace sandboxer
 {
-    partial class Program
+    partial class Program : MarshalByRefObject
     {        
         /// <summary>
         /// ask the user for the program name, arguments and sandbox mode

@@ -9,7 +9,7 @@ using sandboxer.winsand;
 
 namespace sandboxer
 {
-    partial class Program
+    partial class Program : MarshalByRefObject
     {        
         static void Main(string[] args)
         {

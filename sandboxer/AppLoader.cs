@@ -1,7 +1,8 @@
 using System;
 using System.IO;
 using System.Security;
-
+using System.Security.Policy;
+using System.Security.Permissions;
 using sandboxer.permissions;
 
 namespace sandboxer.AppLoader
@@ -38,7 +39,8 @@ namespace sandboxer.AppLoader
             
             try
             {
-                setup.ApplicationBase = SandboxerGlobals.WorkingDirectory;
+                setup.ApplicationBase = AppDomain.CurrentDomain.BaseDirectory;
+                setup.PrivateBinPath = SandboxerGlobals.WorkingDirectory;
 
                 if (setup.ApplicationBase == null)
                 {
@@ -47,14 +49,16 @@ namespace sandboxer.AppLoader
                     return;
                 }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                RuntimeException.Debug(e.Message);
+                RuntimeException.Debug(ex.Message);
             }
 
             // getting user defined permissions
+            // PermissionSet allowedSet = new PermissionSet(PermissionState.Unrestricted);
             PermissionSet allowedSet = PermissionManager.AddPermissionsToSet();
             allowedSet.Demand();
+            //StrongName fullTrustAssembly = typeof(Program).Assembly.Evidence.GetHostEvidence<StrongName>();
 
             try
             {
@@ -65,9 +69,9 @@ namespace sandboxer.AppLoader
 
                 // load the assembly into the sandbox application domain
             }
-            catch (Exception e)
+            catch (Exception ex)
             {                
-                RuntimeException.Debug("Error: Application domain could not be created", e.Message);
+                RuntimeException.Debug("Error: Application domain could not be created", ex.Message);
                 return;
             }
 
@@ -78,10 +82,12 @@ namespace sandboxer.AppLoader
                 // load and execute the assembly file into the application domain
                 sandbox_domain.ExecuteAssembly(program_path, program_args);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
+                new PermissionSet(PermissionState.Unrestricted).Assert();
                 string error_message = "Security Error: file " + SandboxerGlobals.ProgramToRun + " could not be executed";
-                RuntimeException.Debug(error_message, e.Message);
+                RuntimeException.Debug(error_message, ex.Message);
+                CodeAccessPermission.RevertAssert();
                 return;
             }
         }

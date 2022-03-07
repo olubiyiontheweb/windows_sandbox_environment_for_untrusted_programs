@@ -7,6 +7,7 @@ using System.Net;
 using System.Security;
 using System.Collections.Generic;
 using System.Security.Permissions;
+using System.Runtime.Remoting;
 
 using sandboxer;
 
@@ -59,7 +60,7 @@ namespace sandboxer.permissions
                 // adding some required permissions to the sandbox
                 if(SandboxerGlobals.PermissionSelections.Reflection == true)
                 {
-                    permission_set.AddPermission(new ReflectionPermission(ReflectionPermissionFlag.MemberAccess));
+                    permission_set.AddPermission(new ReflectionPermission(ReflectionPermissionFlag.RestrictedMemberAccess));
                     SandboxerGlobals.RedirectMessageDisplay("Added Reflection permission");
                 }
 
@@ -129,7 +130,6 @@ namespace sandboxer.permissions
         /// </summary>
         public static void CreateConfigurationFile()
         {
-            string working_directory = SandboxerGlobals.WorkingDirectory;
             // create a new file
             using (StreamWriter file = new StreamWriter("user_defined_sanbox_config" + ".wsb"))
             {
@@ -148,13 +148,19 @@ namespace sandboxer.permissions
                 file.WriteLine("  </LogonCommand>");
 
                 // writing custom permissions to file
-                if (SandboxerGlobals.CustomPermissions.Count > 0)
+                try
                 {
-                    foreach (string permission in SandboxerGlobals.CustomPermissions)
+                    if (SandboxerGlobals.CustomPermissions.Count > 0)
                     {
-                        file.WriteLine(permission);
+                        foreach (string permission in SandboxerGlobals.CustomPermissions)
+                        {
+                            file.WriteLine(permission);
+                        }
                     }
                 }
+                catch(Exception ex)
+                { }
+                
                 file.WriteLine("</Configuration>");
             }
         }

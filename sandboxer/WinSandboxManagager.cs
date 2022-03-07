@@ -105,9 +105,7 @@ namespace sandboxer.winsand
                 PermissionManager.CreateConfigurationFile();
 
                 // check if user defined config file exists or we use default one
-                string config_filename = DoesFileExist(SandboxerGlobals.WorkingDirectory + @"\user_defined_sanbox_config.wsb") ?
-                    Path.Combine(SandboxerGlobals.WorkingDirectory + @"\user_defined_sanbox_config.wsb") :
-                    Path.Combine(SandboxerGlobals.WorkingDirectory, @"\windows_sanbox_config.wsb");
+                string config_filename = Path.Combine(SandboxerGlobals.WorkingDirectory + @"user_defined_sanbox_config.wsb");
 
                 SandboxerGlobals.RedirectMessageDisplay(" - Windows Sandbox configuration file: " + config_filename + " created.");
 
