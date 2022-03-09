@@ -1,11 +1,6 @@
 ﻿using System;
 using System.IO;
-using System.Runtime.Serialization;
-
-using sandboxer;
-using sandboxer.AppLoader;
 using sandboxer.Definitions;
-using sandboxer.winsand;
 
 namespace sandboxer
 {
@@ -36,8 +31,8 @@ namespace sandboxer
                     try
                     {
                         // append to the console box in windows forms
-                        SandboxerGlobals.SandboxerUIInstance.errorMessage.Add(custom_message);
-                        SandboxerGlobals.SandboxerUIInstance.RefreshConsoleLog();
+                        SandboxerGlobals.ErrorMessage.Add(custom_message);
+                        SandboxerGlobals.RefreshConsoleLog();
                     }
                     catch (Exception)
                     {                        
@@ -69,8 +64,8 @@ namespace sandboxer
                     try
                     {
                         // append to the console box in windows forms
-                        SandboxerGlobals.SandboxerUIInstance.errorMessage.Add(custom_message);
-                        SandboxerGlobals.SandboxerUIInstance.RefreshConsoleLog();
+                        SandboxerGlobals.ErrorMessage.Add(custom_message);
+                        SandboxerGlobals.RefreshConsoleLog();
                     }
                     catch (Exception)
                     {                        
@@ -89,8 +84,8 @@ namespace sandboxer
                         try
                         {
                             // append to the console box in windows forms
-                            SandboxerGlobals.SandboxerUIInstance.errorMessage.Add("Exception_message: " + exception_message + "\n");
-                            SandboxerGlobals.SandboxerUIInstance.RefreshConsoleLog();
+                            SandboxerGlobals.ErrorMessage.Add("Exception_message: " + exception_message + "\n");
+                            SandboxerGlobals.RefreshConsoleLog();
                         }
                         catch (Exception)
                         {                        

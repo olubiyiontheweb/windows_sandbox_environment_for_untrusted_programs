@@ -1,5 +1,5 @@
 ﻿
-namespace interactiveSandboxer
+namespace sandboxer.interactive
 {
     partial class SandboxerUI
     {
@@ -43,12 +43,12 @@ namespace interactiveSandboxer
             this.windowssandbox = new System.Windows.Forms.CheckBox();
             this.dotnet = new System.Windows.Forms.CheckBox();
             this.startbutton = new System.Windows.Forms.Button();
-            this.label8 = new System.Windows.Forms.Label();
-            this.custompermissions = new System.Windows.Forms.TextBox();
-            this.label9 = new System.Windows.Forms.Label();
             this.consolelog = new System.Windows.Forms.ListBox();
             this.label10 = new System.Windows.Forms.Label();
             this.networkaddress = new System.Windows.Forms.TextBox();
+            this.label8 = new System.Windows.Forms.Label();
+            this.label9 = new System.Windows.Forms.Label();
+            this.custompermissions = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // checkedpermissions
@@ -56,11 +56,18 @@ namespace interactiveSandboxer
             this.checkedpermissions.CheckOnClick = true;
             this.checkedpermissions.FormattingEnabled = true;
             this.checkedpermissions.Items.AddRange(new object[] {
+            "Audio Access",
             "Execution Permission",
             "FileSystem Access",
             "Network Access",
+            "Non-DotNet Program",
+            "Printing Permission",
+            "Reflection Permission",
+            "Registry Permission",
+            "Security Permission",
+            "SMTP Permission",
             "User Interface(UI) Permission",
-            "Reflection Permission"});
+            "Web Permission"});
             this.checkedpermissions.Location = new System.Drawing.Point(56, 84);
             this.checkedpermissions.Name = "checkedpermissions";
             this.checkedpermissions.Size = new System.Drawing.Size(268, 79);
@@ -199,38 +206,6 @@ namespace interactiveSandboxer
             this.startbutton.UseVisualStyleBackColor = true;
             this.startbutton.Click += new System.EventHandler(this.button1_Click);
             // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label8.Location = new System.Drawing.Point(53, 172);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(153, 17);
-            this.label8.TabIndex = 18;
-            this.label8.Text = "Custom Permissions";
-            this.label8.Click += new System.EventHandler(this.label8_Click);
-            // 
-            // custompermissions
-            // 
-            this.custompermissions.Location = new System.Drawing.Point(56, 229);
-            this.custompermissions.Multiline = true;
-            this.custompermissions.Name = "custompermissions";
-            this.custompermissions.Size = new System.Drawing.Size(268, 38);
-            this.custompermissions.TabIndex = 17;
-            this.custompermissions.TextChanged += new System.EventHandler(this.custompermissions_TextChanged_1);
-            // 
-            // label9
-            // 
-            this.label9.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label9.Location = new System.Drawing.Point(91, 192);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(233, 34);
-            this.label9.TabIndex = 19;
-            this.label9.Text = "Please refer to the guide on how to add custom permissions for your prefered sand" +
-    "box type";
-            this.label9.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            this.label9.Click += new System.EventHandler(this.label9_Click);
-            // 
             // consolelog
             // 
             this.consolelog.FormattingEnabled = true;
@@ -258,6 +233,38 @@ namespace interactiveSandboxer
             this.networkaddress.Size = new System.Drawing.Size(338, 20);
             this.networkaddress.TabIndex = 21;
             this.networkaddress.TextChanged += new System.EventHandler(this.networkaddress_TextChanged);
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label8.Location = new System.Drawing.Point(53, 172);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(153, 17);
+            this.label8.TabIndex = 18;
+            this.label8.Text = "Custom Permissions";
+            this.label8.Click += new System.EventHandler(this.label8_Click);
+            // 
+            // label9
+            // 
+            this.label9.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label9.Location = new System.Drawing.Point(91, 192);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(233, 34);
+            this.label9.TabIndex = 19;
+            this.label9.Text = "Please refer to the guide on how to add custom permissions for your prefered sand" +
+    "box type";
+            this.label9.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.label9.Click += new System.EventHandler(this.label9_Click);
+            // 
+            // custompermissions
+            // 
+            this.custompermissions.Location = new System.Drawing.Point(56, 229);
+            this.custompermissions.Multiline = true;
+            this.custompermissions.Name = "custompermissions";
+            this.custompermissions.Size = new System.Drawing.Size(268, 38);
+            this.custompermissions.TabIndex = 17;
+            this.custompermissions.TextChanged += new System.EventHandler(this.custompermissions_TextChanged_1);
             // 
             // SandboxerUI
             // 
@@ -308,12 +315,12 @@ namespace interactiveSandboxer
         private System.Windows.Forms.CheckBox windowssandbox;
         private System.Windows.Forms.CheckBox dotnet;
         private System.Windows.Forms.Button startbutton;
-        private System.Windows.Forms.Label label8;
-        private System.Windows.Forms.TextBox custompermissions;
-        private System.Windows.Forms.Label label9;
         public System.Windows.Forms.ListBox consolelog;
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.TextBox networkaddress;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.TextBox custompermissions;
     }
 }
 

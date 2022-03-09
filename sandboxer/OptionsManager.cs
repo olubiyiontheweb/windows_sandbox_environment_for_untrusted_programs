@@ -79,7 +79,7 @@ namespace sandboxer
                     }
                     break;
                 case "permissionselections":
-                    SandboxerGlobals.RedirectMessageDisplay("\nEnter the supported permissions you want to grant to the program (N/E/F/U/R): ");
+                    SandboxerGlobals.RedirectMessageDisplay("\nEnter the supported permissions you want to grant to the program (N/E/F/U/R/S/A/P/T/Y/W): ");
                     string permissions = Console.ReadLine();
                     PermissionDict permissionStruct = new PermissionDict();
                     if (permissions.Contains("N"))
@@ -105,6 +105,36 @@ namespace sandboxer
                     if (permissions.Contains("R"))
                     {
                         permissionStruct.Reflection = true;
+                    }
+
+                    if (permissions.Contains("S"))
+                    {
+                        permissionStruct.Security = true;
+                    }
+
+                    if (permissions.Contains("A"))
+                    {
+                        permissionStruct.AudioAccess = true;
+                    }
+
+                    if (permissions.Contains("P"))
+                    {
+                        permissionStruct.Printing = true;
+                    }
+
+                    if (permissions.Contains("T"))
+                    {
+                        permissionStruct.SMTP = true;
+                    }
+
+                    if (permissions.Contains("Y"))
+                    {
+                        permissionStruct.Registry = true;
+                    }
+
+                    if (permissions.Contains("W"))
+                    {
+                        permissionStruct.Web = true;
                     }
 
                     SandboxerGlobals.PermissionSelections = permissionStruct;

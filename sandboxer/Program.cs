@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Linq;
-using System.Reflection;
-
-using sandboxer.AppLoader;
+using System.Windows.Forms;
 using sandboxer.Definitions;
 using sandboxer.interactive;
-using sandboxer.winsand;
 
 namespace sandboxer
 {
@@ -13,13 +10,10 @@ namespace sandboxer
     {        
         static void Main(string[] args)
         {
-            // let's initialize instance of the interactive sandboxer by reflection before we continue
-            InitializeSanboxerUI();
-
             SandboxerGlobals.RedirectMessageDisplay("\nNow running sandboxer for the first time ...\n");
 
             if(args.Length > 0)
-            {
+            { 
                 // if the user provided some arguments, let's try to load the program
                 if(args.Contains("-i"))
                 {
@@ -66,26 +60,22 @@ namespace sandboxer
                     }
                     else  if (SandboxerGlobals.RunningMode == RunningModes.INTERACTIVE)
                     {
-
-                        string message = "\nRunning sandboxer in " + SandboxerGlobals.RunningMode + " mode";
-
-                        if (SandboxerGlobals.SandboxerUIInstance == null)
+                        // let's initialize instance of the interactive sandboxer before we continue
+                        try
                         {
-                            Console.WriteLine("Couldn't find the interactiveSandboxer.dll file");
+                            // let's initialize instance of the interactive sandboxer before we continue
+                            InitializeSanboxerUI();                         
+                            string message = "\nRunning sandboxer in " + SandboxerGlobals.RunningMode + " mode";                            
+                            SandboxerGlobals.RedirectMessageDisplay(message);                            
+                        }
+                        catch (Exception ex)
+                        {
+                            // do nothing
+                            Console.WriteLine("Couldn't launch the Sandboxer UI");
+                            Console.WriteLine(ex.Message);
                             Console.WriteLine("Press any key to exit");
                             Console.ReadLine();
-                            throw new RuntimeException("Couldn't find the interactiveSandboxer.dll file");
                         }
-                        else
-                        {
-                            SandboxerGlobals.RedirectMessageDisplay(message);
-
-                            // hide the console window
-                            ConsoleExtension.Hide();
-
-                            // show the UI                        
-                            SandboxerGlobals.SandboxerUIInstance.ShowUI();
-                        }                        
                     }
                 }
                 catch (Exception e)
@@ -112,32 +102,11 @@ namespace sandboxer
 
         static void InitializeSanboxerUI()
         {
-            // load the sandboxer UI interface from the interactiveSandboxer.dll assembly
-            // and run the program in the sandbox 
-            string dll_path = SandboxerGlobals.WorkingDirectory + @"\interactiveSandboxer.dll";
-
-            try
-            {
-                // load the dll
-                Assembly assembly = Assembly.LoadFrom(dll_path);
-                // get the ISandboxerUI type
-                Type[] types = assembly.GetTypes();
-                foreach (Type type in types)
-                {
-                    if (type.GetInterface("ISandboxerUI") != null)
-                    {
-                        // create an instance of the class
-                        SandboxerGlobals.SandboxerUIInstance = (ISandboxerUI)Activator.CreateInstance(type);
-                    }
-                }
-
-                // initialize the UI with global variables
-                ExecuteFromUI.InitializeUIFields();
-            }
-            catch (Exception e)
-            {
-                RuntimeException.Debug("Error: " + e.Message);
-            }
+            // load the sandboxer UI interface and run the program in the sandbox 
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+            SandboxerGlobals.SandboxerUIInstance = new SandboxerUI();
+            Application.Run(SandboxerGlobals.SandboxerUIInstance);   
         }
     }
 }

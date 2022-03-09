@@ -1,15 +1,12 @@
 ﻿using System;
+using System.Data.Common;
+using System.Drawing.Printing;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Net;
+using System.Net.Mail;
 using System.Security;
 using System.Collections.Generic;
 using System.Security.Permissions;
-using System.Runtime.Remoting;
-
-using sandboxer;
 
 namespace sandboxer.permissions
 {
@@ -70,6 +67,42 @@ namespace sandboxer.permissions
                     SandboxerGlobals.RedirectMessageDisplay("Added UserInterface permission");
                 }
 
+                if (SandboxerGlobals.PermissionSelections.Security == true)
+                {
+                    permission_set.AddPermission(new SecurityPermission(SecurityPermissionFlag.AllFlags));
+                    SandboxerGlobals.RedirectMessageDisplay("Added Security permission");
+                }
+
+                if (SandboxerGlobals.PermissionSelections.AudioAccess == true)
+                {
+                    permission_set.AddPermission(new MediaPermission(MediaPermissionAudio.AllAudio, MediaPermissionVideo.NoVideo, MediaPermissionImage.SafeImage));
+                    SandboxerGlobals.RedirectMessageDisplay("Added AudioAccess permission");
+                }
+
+                if (SandboxerGlobals.PermissionSelections.SMTP == true)
+                {
+                    permission_set.AddPermission(new SmtpPermission(SmtpAccess.ConnectToUnrestrictedPort));
+                    SandboxerGlobals.RedirectMessageDisplay("Added SMTP permission");
+                }
+
+                if (SandboxerGlobals.PermissionSelections.Printing == true)
+                {
+                    permission_set.AddPermission(new PrintingPermission(PrintingPermissionLevel.DefaultPrinting));
+                    SandboxerGlobals.RedirectMessageDisplay("Added Printing permission");
+                }
+
+                if (SandboxerGlobals.PermissionSelections.Web == true)
+                {
+                    permission_set.AddPermission(new WebPermission(PermissionState.Unrestricted));
+                    SandboxerGlobals.RedirectMessageDisplay("Added Web permission");
+                }
+
+                if (SandboxerGlobals.PermissionSelections.Registry == true)
+                {
+                    permission_set.AddPermission(new RegistryPermission(RegistryPermissionAccess.AllAccess, "*"));
+                    SandboxerGlobals.RedirectMessageDisplay("Added Registry permission");
+                }
+
                 // let's make sure we have all the permissions we need
                 permission_set.Demand();
             }
@@ -77,48 +110,6 @@ namespace sandboxer.permissions
             {                
                 RuntimeException.Debug("Error: Sandbox could not set permissions for the program", e.Message);
                 return null;
-            }
-
-            try
-            {                
-                // cast list of strings (custom permissions) provided by users to list of permissions using reflection
-                if (SandboxerGlobals.CustomPermissions.Count > 0)
-                {
-                    List<IPermission> custom_permissions = new List<IPermission>();
-
-                    // get types of system.security.ipermissions
-                    Type[] permission_types = typeof(IPermission).Assembly.GetTypes();
-
-                    // iterate through the list of custom permissions provided by the user
-                    foreach (string custom_permission in SandboxerGlobals.CustomPermissions)
-                    {
-                        // iterate through the list of system.security.ipermissions
-                        foreach (Type permission_type in permission_types)
-                        {
-                            // if the custom permission matches the name of a system.security.ipermission
-                            if (permission_type.Name == custom_permission)
-                            {
-                                // create an instance of the custom permission
-                                IPermission custom_permission_instance = (IPermission)Activator.CreateInstance(permission_type);
-
-                                // add the custom permission to the list of custom permissions
-                                custom_permissions.Add(custom_permission_instance);
-                            }
-                        }
-                    }                  
-                    
-                    foreach (IPermission permission in custom_permissions)
-                    {
-                        permission_set.AddPermission(permission);
-                        permission_set.Demand();
-                    }
-
-                    SandboxerGlobals.RedirectMessageDisplay("Added custom permissions");
-                }                        
-            }
-            catch (Exception e)
-            {                
-                RuntimeException.Debug("Error: Sandbox could not set your custom permissions for the program", e.Message);
             }
 
             return permission_set;
@@ -158,7 +149,7 @@ namespace sandboxer.permissions
                         }
                     }
                 }
-                catch(Exception ex)
+                catch(Exception)
                 { }
                 
                 file.WriteLine("</Configuration>");

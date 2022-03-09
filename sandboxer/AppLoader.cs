@@ -2,7 +2,6 @@ using System;
 using System.IO;
 using System.Security;
 using System.Security.Policy;
-using System.Security.Permissions;
 using sandboxer.permissions;
 
 namespace sandboxer.AppLoader
@@ -11,7 +10,7 @@ namespace sandboxer.AppLoader
     /// Load assembly files and run them in the created sandbox environment
     /// with the specified security or permission level
     /// </summary>
-    internal class SandboxEnvironment
+    class SandboxEnvironment
     {
         #region Private Fields
 
@@ -58,14 +57,16 @@ namespace sandboxer.AppLoader
             // PermissionSet allowedSet = new PermissionSet(PermissionState.Unrestricted);
             PermissionSet allowedSet = PermissionManager.AddPermissionsToSet();
             allowedSet.Demand();
-            //StrongName fullTrustAssembly = typeof(Program).Assembly.Evidence.GetHostEvidence<StrongName>();
+            
+            StrongName[] trustedList = new StrongName[1];
+            trustedList[0] = typeof(Program).Assembly.Evidence.GetHostEvidence<StrongName>();
 
             try
             {
                 // create the sandbox application domain for the received program
                 sandbox_domain = AppDomain.CreateDomain(
                     Path.GetFileNameWithoutExtension(SandboxerGlobals.ProgramToRun),
-                    null, setup, allowedSet);          
+                    null, setup, allowedSet, trustedList);          
 
                 // load the assembly into the sandbox application domain
             }
@@ -84,10 +85,8 @@ namespace sandboxer.AppLoader
             }
             catch (Exception ex)
             {
-                new PermissionSet(PermissionState.Unrestricted).Assert();
                 string error_message = "Security Error: file " + SandboxerGlobals.ProgramToRun + " could not be executed";
                 RuntimeException.Debug(error_message, ex.Message);
-                CodeAccessPermission.RevertAssert();
                 return;
             }
         }

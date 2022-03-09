@@ -83,15 +83,6 @@ namespace sandboxer.winsand
             }        
         }
 
-        private static bool DoesFileExist(string file_path)
-        {
-            if (!File.Exists(file_path))
-            {
-                return false;
-            }
-            return true;
-        }
-
         public static void RunWindowsSandbox()
         {
             try

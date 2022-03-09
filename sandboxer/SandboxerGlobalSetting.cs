@@ -1,10 +1,5 @@
 ﻿using System;
-using System.IO;
-using System.Security;
 using System.Collections.Generic;
-using System.Security.Permissions;
-
-using sandboxer;
 using sandboxer.AppLoader;
 using sandboxer.Definitions;
 using sandboxer.interactive;
@@ -23,97 +18,15 @@ namespace sandboxer
         public bool Execution { get; set; }
         public bool UserInterface { get; set; }
         public bool Reflection { get; set; }
+        public bool NoneDotNet { get; set; }
+        public bool Security { get; set; }
+        public bool AudioAccess { get; set; }
+        public bool Printing { get; set; }
+        public bool Web { get; set; }
+        public bool SMTP { get; set; }
+        public bool Registry { get; set; }
     }
 
-    public static class ExecuteFromUI
-    {
-        /// <summary>
-        /// get current variables from the UI instance once the start button has been clicked
-        /// </summary>
-        public static void PopulateGlobalVariables()
-        {       
-            if(SandboxerGlobals.SandboxerUIInstance.sandboxMode == RunningModes.NONE )
-            {
-                RuntimeException.Debug("Please select a sandbox mode");
-                return;
-            }
-
-            if (!string.IsNullOrWhiteSpace(SandboxerGlobals.SandboxerUIInstance.workingDirectory))
-            {
-                SandboxerGlobals.WorkingDirectory = SandboxerGlobals.SandboxerUIInstance.workingDirectory;
-            }
-            else
-            {
-                SandboxerGlobals.WorkingDirectory = AppDomain.CurrentDomain.BaseDirectory;
-            }
-
-            // get the current values from the UI
-            if (!string.IsNullOrWhiteSpace(SandboxerGlobals.SandboxerUIInstance.programName))
-            {
-                string program_path = Path.Combine(SandboxerGlobals.WorkingDirectory, SandboxerGlobals.SandboxerUIInstance.programName);
-                // check if file exists
-                if (File.Exists(program_path))
-                {
-                    // set the program name
-                    SandboxerGlobals.ProgramToRun = SandboxerGlobals.SandboxerUIInstance.programName;
-                }
-                else
-                {
-                    // file doesn't exist
-                    SandboxerGlobals.RedirectMessageDisplay("The program File doesn't exist in the working directory");
-                    return;
-                }
-            }
-
-            SandboxerGlobals.ArgumentsForProgram = SandboxerGlobals.SandboxerUIInstance.Arguments;
-
-            SandboxerGlobals.NetworkAddress = SandboxerGlobals.SandboxerUIInstance.networkAddress;
-
-            SandboxerGlobals.SandboxerUIInstance.GetCurrentPermissions();
-
-            SandboxerGlobals.PermissionSelections = SandboxerGlobals.SandboxerUIInstance.availablePermissions;
-
-            SandboxerGlobals.CustomPermissions = SandboxerGlobals.SandboxerUIInstance.customPermissions;
-
-            // checking the sandbox mode selected so we can run it accordingly
-            if (SandboxerGlobals.SandboxerUIInstance.sandboxMode == RunningModes.POWERSHELLVM)
-            {
-                try
-                {
-                    SandboxerGlobals.StartWindowsSandbox();
-                }
-                catch (Exception ex)
-                {
-                    RuntimeException.Debug(ex.Message);
-                }                
-                return;
-            }
-            else
-            {
-                try
-                {
-                    SandboxerGlobals.LoadSandboxEnvironment();
-                }
-                catch (Exception ex)
-                {
-                    RuntimeException.Debug(ex.Message);
-                }                
-                return;
-            }
-        }
-
-        /// <summary>
-        /// pass global variables to the UI instance
-        /// </summary>
-        public static void InitializeUIFields()
-        {
-            SandboxerGlobals.SandboxerUIInstance.workingDirectory = SandboxerGlobals.WorkingDirectory;
-            SandboxerGlobals.SandboxerUIInstance.programName = SandboxerGlobals.ProgramToRun;
-            SandboxerGlobals.SandboxerUIInstance.Arguments = SandboxerGlobals.ArgumentsForProgram;
-            SandboxerGlobals.SandboxerUIInstance.availablePermissions = SandboxerGlobals.PermissionSelections;
-            SandboxerGlobals.SandboxerUIInstance.customPermissions = SandboxerGlobals.CustomPermissions;
-        }
-    }
 
     static class SandboxerGlobals
     {
@@ -128,20 +41,29 @@ namespace sandboxer
         private static string program_to_run = string.Empty;
         private static string[] arguments_for_program = new string[0];
         private static string working_directory = AppDomain.CurrentDomain.BaseDirectory;
+        private static List<string> error_message = new List<string>();
 
+        // set sandbox mode to none
+        private static RunningModes sandbox_mode = RunningModes.NONE;
         private static string network_address = "";
-
         private static PermissionDict permission_selections = new PermissionDict()
         {
             Networking = false,
             FileSystemAcess = false,
             Execution = false,
             UserInterface = false,
-            Reflection = false
+            Reflection = false,
+            NoneDotNet = false,
+            Security = false,
+            AudioAccess = false,
+            Printing = false,
+            Web = false,
+            SMTP = false,
+            Registry = false,
         };
         private static List<string> custom_permissions = new List<string>();
 
-        private static ISandboxerUI sandboxer_ui_instance = null;
+        private static SandboxerUI sandboxer_ui_instance = null;
 
         // public getter and setter methods
         public static bool DebugMode
@@ -196,7 +118,7 @@ namespace sandboxer
             set { custom_permissions = value; }
         }
 
-        public static ISandboxerUI SandboxerUIInstance
+        public static SandboxerUI SandboxerUIInstance
         {
             get { return sandboxer_ui_instance; }
             set { sandboxer_ui_instance = value; }
@@ -208,20 +130,49 @@ namespace sandboxer
             set { network_address = value; }
         }
 
+        public static List<string> ErrorMessage
+        {
+            get { return error_message; }
+            set { error_message = value; }
+        }
+
+        public static RunningModes SandboxMode
+        {
+            get { return sandbox_mode; }
+            set { sandbox_mode = value; }
+        }
+
         #endregion
+
+        // this would help us update the log box for new messages about the state of the sandbox
+        public static void RefreshConsoleLog()
+        {
+            if(SandboxerGlobals.SandboxerUIInstance != null)
+            {                
+                SandboxerGlobals.SandboxerUIInstance.consolelog.Items.Clear();
+
+                // add error messages to the listbox
+                for (int i = 0; i < ErrorMessage.Count; i++)
+                {
+                    SandboxerGlobals.SandboxerUIInstance.consolelog.Items.Add(ErrorMessage[i]);
+                }
+
+                SandboxerGlobals.SandboxerUIInstance.consolelog.Refresh();
+            }
+        }
 
         public static void RedirectMessageDisplay(string custom_message)
         {
             // append to the console box in windows forms
-            if(running_mode == RunningModes.INTERACTIVE && SandboxerGlobals.SandboxerUIInstance != null)
+            if(running_mode == RunningModes.INTERACTIVE)
             {
                 try
                 {
                     // append to the console box in windows forms
-                    sandboxer_ui_instance.errorMessage.Add(custom_message);
+                    error_message.Add(custom_message);
                     if (sandboxer_ui_instance != null)
                     {
-                        sandboxer_ui_instance.RefreshConsoleLog();
+                        RefreshConsoleLog();
                     }
                 }
                 catch (Exception)
